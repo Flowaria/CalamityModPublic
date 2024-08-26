@@ -16,6 +16,7 @@ using Terraria.ModLoader.Utilities;
 
 namespace CalamityMod.NPCs.Abyss
 {
+    [AlwaysSyncTransform]
     public class GulperEelHead : ModNPC
     {
         private Vector2 patrolSpot = Vector2.Zero;

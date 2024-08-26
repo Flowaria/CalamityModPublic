@@ -10,6 +10,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.DesertScourge
 {
+    [AlwaysSyncTransform(SyncWith = typeof(DesertScourgeHead))]
     public class DesertScourgeTail : ModNPC
     {
         public override LocalizedText DisplayName => CalamityUtils.GetText("NPCs.DesertScourgeHead.DisplayName");

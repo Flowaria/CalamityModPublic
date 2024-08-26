@@ -31,6 +31,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.StormWeaver
 {
+    [AlwaysSyncTransform]
     public class StormWeaverHead : ModNPC
     {
         public static int normalIconIndex;

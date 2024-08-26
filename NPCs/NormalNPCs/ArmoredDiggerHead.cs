@@ -13,6 +13,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.NormalNPCs
 {
+    [AlwaysSyncTransform]
     public class ArmoredDiggerHead : ModNPC
     {
         bool TailSpawned = false;

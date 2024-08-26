@@ -33,6 +33,7 @@ using Terraria.ModLoader;
 namespace CalamityMod.NPCs.AquaticScourge
 {
     [AutoloadBossHead]
+    [AlwaysSyncTransform]
     public class AquaticScourgeHead : ModNPC
     {
         public override void SetStaticDefaults()

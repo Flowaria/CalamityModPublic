@@ -11,6 +11,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.PrimordialWyrm
 {
+    [AlwaysSyncTransform(SyncWith = typeof(PrimordialWyrmHead))]
     public class PrimordialWyrmTail : ModNPC
     {
         public static Asset<Texture2D> GlowTexture;
