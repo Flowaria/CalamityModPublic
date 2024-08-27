@@ -41,8 +41,9 @@ namespace CalamityMod.Tiles.SunkenSea
 
         public override void AnimateIndividualTile(int type, int i, int j, ref int frameXOffset, ref int frameYOffset)
         {
-            frameXOffset = i % 2 * subsheetWidth;
-            frameYOffset = j % 2 * subsheetHeight;
+            // (i & 0b0001) = (i % 2)
+            frameXOffset = (i & 0b0001) * subsheetWidth;
+            frameYOffset = (j & 0b0001) * subsheetHeight;
         }
         
         public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
