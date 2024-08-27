@@ -11,7 +11,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.Cryogen
 {
-    [AlwaysSyncTransform(SyncWith = typeof(Cryogen))]
+    [LongDistanceNetSync(SyncWith = typeof(Cryogen))]
     public class CryogenShield : ModNPC
     {
         public static readonly SoundStyle BreakSound = new("CalamityMod/Sounds/NPCKilled/CryogenShieldBreak");

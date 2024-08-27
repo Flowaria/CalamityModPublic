@@ -7,7 +7,7 @@ using Terraria.ModLoader.Utilities;
 
 namespace CalamityMod.NPCs.Abyss
 {
-    [AlwaysSyncTransform(SyncWith = typeof(BobbitWormHead))]
+    [LongDistanceNetSync(SyncWith = typeof(BobbitWormHead))]
     public class BobbitWormSegment : ModNPC
     {
         public override LocalizedText DisplayName => CalamityUtils.GetText("NPCs.BobbitWormHead.DisplayName");

@@ -15,7 +15,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.AstrumDeus
 {
-    [AlwaysSyncTransform(SyncWith = typeof(AstrumDeusHead))]
+    [LongDistanceNetSync(SyncWith = typeof(AstrumDeusHead))]
     public class AstrumDeusTail : ModNPC
     {
         public override LocalizedText DisplayName => CalamityUtils.GetText("NPCs.AstrumDeusHead.DisplayName");

@@ -32,7 +32,7 @@ using Terraria.ModLoader;
 namespace CalamityMod.NPCs.DesertScourge
 {
     [AutoloadBossHead]
-    [AlwaysSyncTransform]
+    [LongDistanceNetSync]
     public class DesertScourgeHead : ModNPC
     {
         private int biomeEnrageTimer = CalamityGlobalNPC.biomeEnrageTimerMax;

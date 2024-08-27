@@ -7,7 +7,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.Abyss
 {
-    [AlwaysSyncTransform(SyncWith = typeof(OarfishHead))]
+    [LongDistanceNetSync(SyncWith = typeof(OarfishHead))]
     public class OarfishBody : ModNPC
     {
         public override LocalizedText DisplayName => CalamityUtils.GetText("NPCs.OarfishHead.DisplayName");

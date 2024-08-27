@@ -13,7 +13,7 @@ using Terraria.ModLoader.Utilities;
 
 namespace CalamityMod.NPCs.Abyss
 {
-    [AlwaysSyncTransform]
+    [LongDistanceNetSync]
     public class OarfishHead : ModNPC
     {
         private Vector2 patrolSpot = Vector2.Zero;

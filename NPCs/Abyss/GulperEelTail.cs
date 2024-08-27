@@ -11,7 +11,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.Abyss
 {
-    [AlwaysSyncTransform(SyncWith = typeof(GulperEelHead))]
+    [LongDistanceNetSync(SyncWith = typeof(GulperEelHead))]
     public class GulperEelTail : ModNPC
     {
         public override LocalizedText DisplayName => CalamityUtils.GetText("NPCs.GulperEelHead.DisplayName");

@@ -13,7 +13,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.Abyss
 {
-    [AlwaysSyncTransform]
+    [LongDistanceNetSync]
     public class BobbitWormHead : ModNPC
     {
         public override void SetStaticDefaults()

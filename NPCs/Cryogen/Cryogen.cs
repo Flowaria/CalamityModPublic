@@ -39,7 +39,7 @@ using Terraria.ModLoader;
 namespace CalamityMod.NPCs.Cryogen
 {
     [AutoloadBossHead]
-    [AlwaysSyncTransform] // Cryogen follows you forever like Queen Bee in vanilla, So we need this to sync it's position on minimap
+    [LongDistanceNetSync] // Cryogen follows you forever like Queen Bee in vanilla, So we need this to sync it's position on minimap
     public class Cryogen : ModNPC
     {
         private int biomeEnrageTimer = CalamityGlobalNPC.biomeEnrageTimerMax;

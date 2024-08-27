@@ -16,7 +16,7 @@ using static Humanizer.In;
 
 namespace CalamityMod.NPCs.SupremeCalamitas
 {
-    [AlwaysSyncTransform]
+    [LongDistanceNetSync]
     public class SepulcherHead : ModNPC
     {
         public static readonly SoundStyle DeathSound = new("CalamityMod/Sounds/NPCKilled/SepulcherDeath");

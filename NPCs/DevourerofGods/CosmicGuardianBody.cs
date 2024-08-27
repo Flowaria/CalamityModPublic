@@ -13,7 +13,7 @@ using Terraria.Localization;
 using Terraria.ModLoader;
 namespace CalamityMod.NPCs.DevourerofGods
 {
-    [AlwaysSyncTransform(SyncWith = typeof(CosmicGuardianHead))]
+    [LongDistanceNetSync(SyncWith = typeof(CosmicGuardianHead))]
     public class CosmicGuardianBody : ModNPC
     {
         public int invinceTime = 180;

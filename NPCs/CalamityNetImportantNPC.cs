@@ -30,14 +30,14 @@ namespace CalamityMod.NPCs
             int uniqueNetOffsetID = 0;
 
             #region Vanilla Enemies
-            MarkNPCToNetImportant(NPCID.EaterofWorldsHead, uniqueNetOffsetID);
-            MarkNPCToNetImportant(NPCID.EaterofWorldsBody, uniqueNetOffsetID);
-            MarkNPCToNetImportant(NPCID.EaterofWorldsTail, uniqueNetOffsetID);
+            MarkNPCToLongDistanceSync(NPCID.EaterofWorldsHead, uniqueNetOffsetID);
+            MarkNPCToLongDistanceSync(NPCID.EaterofWorldsBody, uniqueNetOffsetID);
+            MarkNPCToLongDistanceSync(NPCID.EaterofWorldsTail, uniqueNetOffsetID);
             uniqueNetOffsetID++;
 
-            MarkNPCToNetImportant(NPCID.TheDestroyer, uniqueNetOffsetID);
-            MarkNPCToNetImportant(NPCID.TheDestroyerBody, uniqueNetOffsetID);
-            MarkNPCToNetImportant(NPCID.TheDestroyerTail, uniqueNetOffsetID);
+            MarkNPCToLongDistanceSync(NPCID.TheDestroyer, uniqueNetOffsetID);
+            MarkNPCToLongDistanceSync(NPCID.TheDestroyerBody, uniqueNetOffsetID);
+            MarkNPCToLongDistanceSync(NPCID.TheDestroyerTail, uniqueNetOffsetID);
             uniqueNetOffsetID++;
             #endregion Vanilla Enemies
 
@@ -51,9 +51,9 @@ namespace CalamityMod.NPCs
             {
                 try
                 {
-                    var syncAttribute = type.GetCustomAttribute<AlwaysSyncTransformAttribute>();
+                    var longDistSync = type.GetCustomAttribute<LongDistanceNetSyncAttribute>();
 
-                    if (syncAttribute == null)
+                    if (longDistSync == null)
                         continue;
 
                     var npcTypeActualMethod = npcTypeMethod.MakeGenericMethod(typeArguments: type);
@@ -61,7 +61,7 @@ namespace CalamityMod.NPCs
                     int npcType = (int)npcTypeActualMethod.Invoke(null, null);
                     int netOffset = uniqueNetOffsetID;
 
-                    Type typeToCheck = syncAttribute.SyncWith ?? type;
+                    Type typeToCheck = longDistSync.SyncWith ?? type;
                     if (netOffsetTable.TryGetValue(typeToCheck, out int savedUniqueID))
                     {
                         netOffset = savedUniqueID;
@@ -72,7 +72,7 @@ namespace CalamityMod.NPCs
                         uniqueNetOffsetID++;
                     }
 
-                    MarkNPCToNetImportant(npcType, netOffset);
+                    MarkNPCToLongDistanceSync(npcType, netOffset);
                 }
                 catch (Exception e)
                 {
@@ -112,12 +112,12 @@ namespace CalamityMod.NPCs
             }
         }
 
-        private static void MarkNPCToNetImportant<NPCType>(int netUpdateTickOffset = 0) where NPCType : ModNPC
+        private static void MarkNPCToLongDistanceSync<NPCType>(int netUpdateTickOffset = 0) where NPCType : ModNPC
         {
-            MarkNPCToNetImportant(ModContent.NPCType<NPCType>(), netUpdateTickOffset);
+            MarkNPCToLongDistanceSync(ModContent.NPCType<NPCType>(), netUpdateTickOffset);
         }
 
-        private static void MarkNPCToNetImportant(int npcType, int netUpdateTickOffset = 0)
+        private static void MarkNPCToLongDistanceSync(int npcType, int netUpdateTickOffset = 0)
         {
             typesToUpdate[npcType] = netUpdateTickOffset;
         }

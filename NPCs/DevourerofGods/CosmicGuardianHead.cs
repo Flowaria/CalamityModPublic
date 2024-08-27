@@ -15,7 +15,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.DevourerofGods
 {
-    [AlwaysSyncTransform]
+    [LongDistanceNetSync]
     public class CosmicGuardianHead : ModNPC
     {
         private bool tail = false;

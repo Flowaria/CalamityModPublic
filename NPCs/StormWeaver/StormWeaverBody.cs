@@ -14,7 +14,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.StormWeaver
 {
-    [AlwaysSyncTransform(SyncWith = typeof(StormWeaverHead))]
+    [LongDistanceNetSync(SyncWith = typeof(StormWeaverHead))]
     public class StormWeaverBody : ModNPC
     {
         public static Asset<Texture2D> Phase2Texture;

@@ -15,7 +15,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.Perforator
 {
-    [AlwaysSyncTransform(SyncWith = typeof(PerforatorHeadMedium))]
+    [LongDistanceNetSync(SyncWith = typeof(PerforatorHeadMedium))]
     public class PerforatorTailMedium : ModNPC
     {
         public static readonly SoundStyle HitSound = new("CalamityMod/Sounds/NPCHit/PerfMediumHit", 3);

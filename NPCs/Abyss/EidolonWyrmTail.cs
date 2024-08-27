@@ -9,7 +9,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.Abyss
 {
-    [AlwaysSyncTransform(SyncWith = typeof(EidolonWyrmHead))]
+    [LongDistanceNetSync(SyncWith = typeof(EidolonWyrmHead))]
     public class EidolonWyrmTail : ModNPC
     {
         public override LocalizedText DisplayName => CalamityUtils.GetText("NPCs.EidolonWyrmHead.DisplayName");

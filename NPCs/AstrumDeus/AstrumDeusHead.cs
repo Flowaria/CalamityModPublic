@@ -34,7 +34,7 @@ using Terraria.ModLoader;
 namespace CalamityMod.NPCs.AstrumDeus
 {
     [AutoloadBossHead]
-    [AlwaysSyncTransform]
+    [LongDistanceNetSync]
     public class AstrumDeusHead : ModNPC
     {
         public static readonly SoundStyle SpawnSound = new("CalamityMod/Sounds/Custom/AstrumDeus/AstrumDeusSpawn");

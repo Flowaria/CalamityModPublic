@@ -11,7 +11,7 @@ namespace CalamityMod.NPCs
     /// This attribute allows ModNPC to always sync for their position and rotation data at least every 45 frames
     /// </summary>
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
-    public sealed class AlwaysSyncTransformAttribute : Attribute
+    public sealed class LongDistanceNetSyncAttribute : Attribute
     {
         /// <summary>
         /// Syncs this NPC to other NPC's sync frame
@@ -19,7 +19,7 @@ namespace CalamityMod.NPCs
         /// </summary>
         public Type SyncWith { get; set; } = null;
 
-        public AlwaysSyncTransformAttribute()
+        public LongDistanceNetSyncAttribute()
         {
 
         }
