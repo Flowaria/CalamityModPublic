@@ -53,9 +53,7 @@ namespace CalamityMod.Tiles
         public virtual PaintColorTint ColorTint => PaintColorTint.OnlyByDeepPaint;
         public virtual bool GlowMaskAffectedByOnlyDeepPaint => true;
 
-        public virtual Color GetGlowMaskBaseColor() => Color.White;
-
-        public abstract float GetGlowMaskBrightness(int i, int j, TileDrawInfo drawData);
+        public abstract Color GetGlowMaskColor(int i, int j, TileDrawInfo drawData);
 
         public static Color ApplyPaint(int paintType, Color color, bool deepPaintOnly = true)
         {

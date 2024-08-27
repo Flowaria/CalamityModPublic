@@ -78,7 +78,7 @@ namespace CalamityMod.Tiles.Abyss
             frameXOffset = animationFrameWidth * TileFraming.GetVariation4x4_012_Low0(i, j);
         }
 
-        public override float GetGlowMaskBrightness(int i, int j, TileDrawInfo drawData)
+        public override Color GetGlowMaskColor(int i, int j, TileDrawInfo drawData)
         {
             float brightness = 1f;
             float timeFactor = (float)(Main.timeForVisualEffects * 0.007);
@@ -87,7 +87,7 @@ namespace CalamityMod.Tiles.Abyss
             brightness *= (float)MathF.Sin(i * 18f + timeFactor);
             brightness *= (float)MathF.Sin(j * 18f + timeFactor);
             //brightness *= 0.95f;
-            return brightness;
+            return Color.White * brightness;
         }
     }
 }

@@ -89,9 +89,9 @@ namespace CalamityMod.Tiles.Ores
             b = 0.00f;
         }
 
-        public override float GetGlowMaskBrightness(int i, int j, TileDrawInfo drawData)
+        public override Color GetGlowMaskColor(int i, int j, TileDrawInfo drawData)
         {
-            return 0.195f;
+            return Color.White * 0.195f;
         }
     }
 }

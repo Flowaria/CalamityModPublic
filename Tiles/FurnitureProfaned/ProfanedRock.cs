@@ -45,9 +45,9 @@ namespace CalamityMod.Tiles.FurnitureProfaned
             frameXOffset = AnimationFrameWidth * TileFraming.GetVariation4x4_012_Low0(i, j);
         }
 
-        public override float GetGlowMaskBrightness(int i, int j, TileDrawInfo drawData)
+        public override Color GetGlowMaskColor(int i, int j, TileDrawInfo drawData)
         {
-            return 0.098f;
+            return Color.White * 0.098f;
         }
     }
 }

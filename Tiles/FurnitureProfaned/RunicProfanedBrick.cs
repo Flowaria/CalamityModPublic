@@ -43,9 +43,9 @@ namespace CalamityMod.Tiles.FurnitureProfaned
             frameYOffset = j % 2 * AnimationFrameHeight;
         }
 
-        public override float GetGlowMaskBrightness(int i, int j, TileDrawInfo drawData)
+        public override Color GetGlowMaskColor(int i, int j, TileDrawInfo drawData)
         {
-            return 0.5f;
+            return Color.White * 0.5f;
         }
     }
 }

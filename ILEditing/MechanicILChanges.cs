@@ -1618,12 +1618,7 @@ namespace CalamityMod.ILEditing
                 var tileCache = drawData.tileCache;
                 int colType = tileCache.TileColor;
 
-                float brightness = glowMaskTile.GetGlowMaskBrightness(tileX, tileY, drawData);
-                if (brightness <= 0.0f)
-                    return;
-
-                Color drawColor = glowMaskTile.GetGlowMaskBaseColor();
-                drawColor = drawColor.MultiplyRGBA(new Color(brightness, brightness, brightness, 1.0f));
+                Color drawColor = glowMaskTile.GetGlowMaskColor(tileX, tileY, drawData);
                 drawColor = glowMaskTile.ColorTint switch
                 {
                     GlowMaskTile.PaintColorTint.OnlyByDeepPaint => GlowMaskTile.ApplyPaint(colType, drawColor, deepPaintOnly: true),

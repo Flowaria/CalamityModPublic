@@ -87,12 +87,12 @@ namespace CalamityMod.Tiles.Abyss
             b *= brightness;
         }
 
-        public override float GetGlowMaskBrightness(int i, int j, TileDrawInfo drawData)
+        public override Color GetGlowMaskColor(int i, int j, TileDrawInfo drawData)
         {
             float glowbrightness = 1f;
             float glowspeed = (float)(Main.timeForVisualEffects * 0.01);
             glowbrightness *= (float)MathF.Sin(i / 60f + glowspeed);
-            return glowbrightness;
+            return Color.White * glowbrightness;
         }
     }
 }
