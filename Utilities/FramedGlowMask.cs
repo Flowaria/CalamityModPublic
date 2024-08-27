@@ -38,13 +38,7 @@ namespace CalamityMod
         /// </summary>
         public int FrameHeight { get; private set; }
 
-        private static event Action _OnUnload;
         private readonly bool[,] _HasGlowContent;
-
-        internal static void UnloadTexCache()
-        {
-            _OnUnload?.Invoke();
-        }
 
         public FramedGlowMask(string asset, int frameWidth, int frameHeight, bool pretendEveryFrameHaveGlow = false)
         {
@@ -58,15 +52,6 @@ namespace CalamityMod
             Texture = ModContent.Request<Texture2D>(asset, AssetRequestMode.ImmediateLoad).Value;
             if (Texture is null)
                 return;
-
-            _OnUnload += () =>
-            {
-                Texture = null;
-                FrameWidth = 0;
-                FrameHeight = 0;
-                FrameXCount = 0;
-                FrameYCount = 0;
-            };
 
             FrameXCount = Texture.Width / frameWidth;
             FrameYCount = Texture.Height / frameHeight;
@@ -123,6 +108,15 @@ namespace CalamityMod
                     });
                 });
             }
+        }
+
+        public void Unload()
+        {
+            Texture = null;
+            FrameWidth = 0;
+            FrameHeight = 0;
+            FrameXCount = 0;
+            FrameYCount = 0;
         }
 
         public bool HasContentInFrameIndex(int xFrame, int yFrame)
