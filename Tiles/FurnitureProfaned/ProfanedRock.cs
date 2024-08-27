@@ -3,19 +3,18 @@ using CalamityMod.Dusts.Furniture;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.FurnitureProfaned
 {
-    public class ProfanedRock : ModTile
+    public class ProfanedRock : GlowMaskTile
     {
-        internal static FramedGlowMask GlowMask;
+        public override string GlowMaskAsset => "CalamityMod/Tiles/FurnitureProfaned/ProfanedRockGlow";
 
-        public override void SetStaticDefaults()
+        public override void SetupStatic()
         {
-            GlowMask = new("CalamityMod/Tiles/FurnitureProfaned/ProfanedRockGlow", 18, 18);
-
             Main.tileSolid[Type] = true;
             Main.tileMergeDirt[Type] = true;
             Main.tileBlockLight[Type] = true;
@@ -28,12 +27,6 @@ namespace CalamityMod.Tiles.FurnitureProfaned
             MineResist = 4f;
             MinPick = 225;
             AddMapEntry(new Color(84, 38, 33));
-        }
-
-        public override void Unload()
-        {
-            GlowMask?.Unload();
-            GlowMask = null;
         }
 
         int animationFrameWidth = 288;
@@ -50,37 +43,9 @@ namespace CalamityMod.Tiles.FurnitureProfaned
             frameXOffset = animationFrameWidth * TileFraming.GetVariation4x4_012_Low0(i, j);
         }
 
-        public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
+        public override float GetGlowMaskBrightness(int i, int j, TileDrawInfo drawData)
         {
-            if (GlowMask.Texture is null)
-                return;
-
-            var tile = Main.tile[i, j];
-            int xPos = tile.TileFrameX;
-            int yPos = tile.TileFrameY;
-            int xOffset = animationFrameWidth * TileFraming.GetVariation4x4_012_Low0(i, j);
-            xPos += xOffset;
-
-            if (GlowMask.HasContentInFramePos(xPos, yPos))
-            {
-                Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
-                Vector2 drawOffset = new Vector2(i * 16 - Main.screenPosition.X, j * 16 - Main.screenPosition.Y) + zero;
-                Color drawColour = GetDrawColour(i, j, new Color(25, 25, 25, 25));
-                TileFraming.SlopedGlowmask(in tile, i, j, GlowMask.Texture, drawOffset, null, GetDrawColour(i, j, drawColour), default);
-            }
-        }
-
-        private Color GetDrawColour(int i, int j, Color colour)
-        {
-            int colType = Main.tile[i, j].TileColor;
-            Color paintCol = WorldGen.paintColor(colType);
-            if (colType >= 13 && colType <= 24)
-            {
-                colour.R = (byte)(paintCol.R / 255f * colour.R);
-                colour.G = (byte)(paintCol.G / 255f * colour.G);
-                colour.B = (byte)(paintCol.B / 255f * colour.B);
-            }
-            return colour;
+            return 0.098f;
         }
     }
 }

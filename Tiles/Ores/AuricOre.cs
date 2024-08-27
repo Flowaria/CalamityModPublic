@@ -14,15 +14,14 @@ using Terraria.ObjectData;
 
 namespace CalamityMod.Tiles.Ores
 {
-    public class AuricOre : ModTile
+    public class AuricOre : GlowMaskTile
     {
         public static readonly SoundStyle MineSound = new("CalamityMod/Sounds/Custom/AuricMine", 3);
         public static bool Animate;
 
-        internal static FramedGlowMask GlowMask;
+        public override string GlowMaskAsset => "CalamityMod/Tiles/Ores/AuricOreGlow";
 
-
-        public override void SetStaticDefaults()
+        public override void SetupStatic()
         {
             GlowMask = new("CalamityMod/Tiles/Ores/AuricOreGlow", 18, 18);
 
@@ -48,12 +47,6 @@ namespace CalamityMod.Tiles.Ores
             
             this.RegisterUniversalMerge(TileID.Dirt, "CalamityMod/Tiles/Merges/DirtMerge");
             this.RegisterUniversalMerge(TileID.Stone, "CalamityMod/Tiles/Merges/StoneMerge");
-        }
-
-        public override void Unload()
-        {
-            GlowMask?.Unload();
-            GlowMask = null;
         }
 
         public override bool CanExplode(int i, int j)
@@ -91,32 +84,9 @@ namespace CalamityMod.Tiles.Ores
             }
         }
 
-        public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
+        public override float GetGlowMaskBrightness(int i, int j, TileDrawInfo drawData)
         {
-            var tileCache = Main.tile[i, j];
-            int xPos = tileCache.TileFrameX;
-            int yPos = tileCache.TileFrameY + (AnimationFrameHeight * Main.tileFrame[Type]);
-
-            if (GlowMask.HasContentInFramePos(xPos, yPos))
-            {
-                Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
-                Vector2 drawOffset = new Vector2(i * 16 - Main.screenPosition.X, j * 16 - Main.screenPosition.Y) + zero;
-                Color drawColour = GetDrawColour(i, j, new Color(225, 255, 255, 255));
-                TileFraming.SlopedGlowmask(in tileCache, i, j, GlowMask.Texture, drawOffset, null, GetDrawColour(i, j, drawColour), default);
-            }
-        }
-
-        private Color GetDrawColour(int i, int j, Color colour)
-        {
-            int colType = Main.tile[i, j].TileColor;
-            Color paintCol = WorldGen.paintColor(colType);
-            if (colType >= 13 && colType <= 24)
-            {
-                colour.R = (byte)(paintCol.R / 255f * colour.R);
-                colour.G = (byte)(paintCol.G / 255f * colour.G);
-                colour.B = (byte)(paintCol.B / 255f * colour.B);
-            }
-            return colour;
+            return 1.0f;
         }
     }
 }

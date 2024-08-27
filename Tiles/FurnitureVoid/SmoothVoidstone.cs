@@ -59,8 +59,6 @@ namespace CalamityMod.Tiles.FurnitureVoid
 
             if (GlowMask.HasContentInFramePos(xPos, yPos))
             {
-                Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
-                Vector2 drawOffset = new Vector2(i * 16 - Main.screenPosition.X, j * 16 - Main.screenPosition.Y) + zero;
                 Color drawColour = GetDrawColour(i, j, new Color(255, 255, 255, 255));
                 float brightness = 1f;
                 float declareThisHereToPreventRunningTheSameCalculationMultipleTimes = Main.GameUpdateCount * 0.007f;
@@ -70,7 +68,7 @@ namespace CalamityMod.Tiles.FurnitureVoid
                 brightness *= (float)MathF.Sin(j * 18f + declareThisHereToPreventRunningTheSameCalculationMultipleTimes);
                 drawColour *= brightness;
 
-                TileFraming.SlopedGlowmask(in tileCache, i, j, GlowMask.Texture, drawOffset, null, GetDrawColour(i, j, drawColour), default);
+                TileFraming.SlopedGlowmask(in tileCache, i, j, GlowMask.Texture, null, GetDrawColour(i, j, drawColour), default);
             }
         }
 

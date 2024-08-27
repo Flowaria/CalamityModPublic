@@ -61,10 +61,7 @@ namespace CalamityMod.Tiles.FurnitureExo
             if (GlowMask.HasContentInFramePos(xPos, yPos))
             {
                 Color drawColour = GetDrawColour(i, j, Color.White);
-                Vector2 drawOffset = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
-                Vector2 drawPosition = new Vector2(i * 16 - Main.screenPosition.X, j * 16 - Main.screenPosition.Y) + drawOffset;
-
-                TileFraming.SlopedGlowmask(in tileCache, i, j, GlowMask.Texture, drawOffset, null, GetDrawColour(i, j, drawColour), default);
+                TileFraming.SlopedGlowmask(in tileCache, i, j, GlowMask.Texture, null, GetDrawColour(i, j, drawColour), default);
             }
         }
         private Color GetDrawColour(int i, int j, Color colour)

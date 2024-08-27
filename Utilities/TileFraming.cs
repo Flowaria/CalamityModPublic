@@ -1377,7 +1377,7 @@ namespace CalamityMod
             }
         }
 
-        internal static void SlopedGlowmask(in Tile tile, int i, int j, Texture2D texture, Vector2 position, Rectangle? sourceRectangle, Color drawColor, Vector2 positionOffset)
+        internal static void SlopedGlowmask(in Tile tile, int i, int j, Texture2D texture, Rectangle? sourceRectangle, Color drawColor, Vector2 positionOffset)
         {
             int TileFrameX = tile.TileFrameX;
             int TileFrameY = tile.TileFrameY;

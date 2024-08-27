@@ -76,9 +76,7 @@ namespace CalamityMod.Tiles
             if (GlowMask.HasContentInFramePos(xPos, yPos))
             {
                 Color drawColour = GetDrawColour(i, j, Color.White);
-                Vector2 drawOffset = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
-                Vector2 drawPosition = new Vector2(i * 16 - Main.screenPosition.X, j * 16 - Main.screenPosition.Y) + drawOffset;
-                TileFraming.SlopedGlowmask(in tile, i, j, GlowMask.Texture, drawPosition + new Vector2(0f, 8f), new Rectangle?(new Rectangle(xPos, yPos, 18, 8)), GetDrawColour(i, j, drawColour), default);
+                TileFraming.SlopedGlowmask(in tile, i, j, GlowMask.Texture, new Rectangle(xPos, yPos, 18, 8), GetDrawColour(i, j, drawColour), default);
             }
         }
         private Color GetDrawColour(int i, int j, Color colour)

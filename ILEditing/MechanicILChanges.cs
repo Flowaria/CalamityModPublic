@@ -1598,12 +1598,7 @@ namespace CalamityMod.ILEditing
         {
             orig(self, drawData, solidLayer, waterStyleOverride, screenPosition, screenOffset, tileX, tileY);
 
-            ModTile tile = TileLoader.GetTile(drawData.typeCache);
-
-            if (tile == null)
-                return;
-
-            if (tile is GlowMaskTile glowMaskTile)
+            if (GlowMaskTile.InstanceRegistry.TryGetValue(drawData.typeCache, out var glowMaskTile))
             {
                 var glowMask = glowMaskTile.GlowMask;
                 if (glowMask is null)
@@ -1618,19 +1613,21 @@ namespace CalamityMod.ILEditing
                 {
                     var tileCache = drawData.tileCache;
                     int colType = tileCache.TileColor;
-                    Color paintCol = WorldGen.paintColor(colType);
-
-                    Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
-                    Vector2 drawOffset = new Vector2(tileX * 16 - Main.screenPosition.X, tileY * 16 - Main.screenPosition.Y) + zero;
 
                     float brightness = glowMaskTile.GetGlowMaskBrightness(tileX, tileY, drawData);
                     if (brightness <= float.Epsilon)
                         return;
 
-                    Color drawColour = paintCol * brightness;
+                    Color drawColor = glowMaskTile.GetGlowMaskBaseColor();
+                    drawColor *= brightness;
+                    drawColor = glowMaskTile.ColorTint switch
+                    {
+                        GlowMaskTile.PaintColorTint.OnlyByDeepPaint => GlowMaskTile.ApplyPaint(colType, drawColor, deepPaintOnly: true),
+                        GlowMaskTile.PaintColorTint.ByEveryPaint => GlowMaskTile.ApplyPaint(colType, drawColor, deepPaintOnly: false),
+                        _ => drawColor
+                    };
 
-                    var drawRect = new Rectangle(xPos, yPos, 16, 16);
-                    TileFraming.SlopedGlowmask(in tileCache, tileX, tileY, glowMask.Texture, drawOffset, drawRect, drawColour, default);
+                    TileFraming.SlopedGlowmask(in tileCache, tileX, tileY, glowMask.Texture, null, drawColor, default);
                 }
             }
         }

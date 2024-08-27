@@ -53,11 +53,7 @@ namespace CalamityMod.Tiles.FurnitureStratus
             if (GlowMask.HasContentInFramePos(xPos, yPos))
             {
                 Color drawColour = GetDrawColour(i, j, new Color(100, 100, 100, 100));
-                Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
-                Vector2 drawOffset = new Vector2(i * 16 - Main.screenPosition.X, j * 16 - Main.screenPosition.Y) + zero;
-                Tile trackTile = Main.tile[i, j];
-
-                TileFraming.SlopedGlowmask(in tileCache, i, j, GlowMask.Texture, drawOffset, null, GetDrawColour(i, j, drawColour), default);
+                TileFraming.SlopedGlowmask(in tileCache, i, j, GlowMask.Texture, null, GetDrawColour(i, j, drawColour), default);
             }
         }
 

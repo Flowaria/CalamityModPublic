@@ -18,15 +18,8 @@ namespace CalamityMod.Tiles.Abyss
 
         public override string GlowMaskAsset => "CalamityMod/Tiles/Abyss/Voidstone_Glowmask";
 
-        public override void Unload()
+        public override void SetupStatic()
         {
-            GlowMask = null;
-        }
-
-        public override void SetStaticDefaults()
-        {
-            base.SetStaticDefaults();
-
             Main.tileSolid[Type] = true;
             Main.tileBlockLight[Type] = true;
             Main.tileBrick[Type] = true; 
