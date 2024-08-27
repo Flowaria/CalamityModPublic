@@ -23,6 +23,7 @@ using CalamityMod.Particles;
 using CalamityMod.Projectiles;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Systems;
+using CalamityMod.Tiles;
 using CalamityMod.Tiles.Abyss;
 using CalamityMod.Waters;
 using Microsoft.Xna.Framework;
@@ -1592,5 +1593,46 @@ namespace CalamityMod.ILEditing
             }
         }
         #endregion
+
+        private void DrawGlowMaskAfterTileDraw(On_TileDrawing.orig_DrawSingleTile orig, TileDrawing self, TileDrawInfo drawData, bool solidLayer, int waterStyleOverride, Vector2 screenPosition, Vector2 screenOffset, int tileX, int tileY)
+        {
+            orig(self, drawData, solidLayer, waterStyleOverride, screenPosition, screenOffset, tileX, tileY);
+
+            ModTile tile = TileLoader.GetTile(drawData.typeCache);
+
+            if (tile == null)
+                return;
+
+            if (tile is GlowMaskTile glowMaskTile)
+            {
+                var glowMask = glowMaskTile.GlowMask;
+                if (glowMask is null)
+                    return;
+
+                if (glowMask.Texture is null)
+                    return;
+
+                int xPos = drawData.tileFrameX + drawData.addFrX;
+                int yPos = drawData.tileFrameY + drawData.addFrY;
+                if (glowMask.HasContentInFramePos(xPos, yPos))
+                {
+                    var tileCache = drawData.tileCache;
+                    int colType = tileCache.TileColor;
+                    Color paintCol = WorldGen.paintColor(colType);
+
+                    Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
+                    Vector2 drawOffset = new Vector2(tileX * 16 - Main.screenPosition.X, tileY * 16 - Main.screenPosition.Y) + zero;
+
+                    float brightness = glowMaskTile.GetGlowMaskBrightness(tileX, tileY, drawData);
+                    if (brightness <= float.Epsilon)
+                        return;
+
+                    Color drawColour = paintCol * brightness;
+
+                    var drawRect = new Rectangle(xPos, yPos, 16, 16);
+                    TileFraming.SlopedGlowmask(in tileCache, tileX, tileY, glowMask.Texture, drawOffset, drawRect, drawColour, default);
+                }
+            }
+        }
     }
 }

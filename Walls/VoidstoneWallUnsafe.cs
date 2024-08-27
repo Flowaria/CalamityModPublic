@@ -23,6 +23,12 @@ namespace CalamityMod.Walls
             AddMapEntry(new Color(0, 0, 0));
         }
 
+        public override void Unload()
+        {
+            GlowMask?.Unload();
+            GlowMask = null;
+        }
+
         public override void RandomUpdate(int i, int j)
         {
             if (Main.tile[i, j].LiquidAmount == 0 && j < Main.maxTilesY - 205)

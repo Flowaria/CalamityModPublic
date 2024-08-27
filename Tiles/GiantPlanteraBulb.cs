@@ -22,6 +22,12 @@ namespace CalamityMod.Tiles
             GlowMask = new($"{Texture}Glow", 18, 18);
         }
 
+        public override void Unload()
+        {
+            GlowMask?.Unload();
+            GlowMask = null;
+        }
+
         public override void SetStaticDefaults()
         {
             // Tile can provide light

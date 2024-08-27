@@ -42,6 +42,13 @@ namespace CalamityMod.Tiles.Abyss.AbyssAmbient
 
             base.SetStaticDefaults();
         }
+
+        public override void Unload()
+        {
+            GlowMask?.Unload();
+            GlowMask = null;
+        }
+
         public override void NearbyEffects(int i, int j, bool closer)
         {
             if (closer && Main.rand.NextBool(100) && j > Main.worldSurface)

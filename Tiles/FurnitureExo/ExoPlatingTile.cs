@@ -28,6 +28,12 @@ namespace CalamityMod.Tiles.FurnitureExo
             AnimationFrameHeight = 90;
         }
 
+        public override void Unload()
+        {
+            GlowMask?.Unload();
+            GlowMask = null;
+        }
+
         public override bool CanExplode(int i, int j) => false;
 
         public override bool CreateDust(int i, int j, ref int type)
@@ -48,10 +54,9 @@ namespace CalamityMod.Tiles.FurnitureExo
             if (GlowMask.Texture is null)
                 return;
 
-            Tile tile = CalamityUtils.ParanoidTileRetrieval(i, j);
-            int xPos = tile.TileFrameX;
-            int frameOffset = j % 2 * AnimationFrameHeight;
-            int yPos = tile.TileFrameY + frameOffset;
+            var tileCache = CalamityUtils.ParanoidTileRetrieval(i, j);
+            int xPos = tileCache.TileFrameX;
+            int yPos = tileCache.TileFrameY;
 
             if (GlowMask.HasContentInFramePos(xPos, yPos))
             {
@@ -59,7 +64,7 @@ namespace CalamityMod.Tiles.FurnitureExo
                 Vector2 drawOffset = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
                 Vector2 drawPosition = new Vector2(i * 16 - Main.screenPosition.X, j * 16 - Main.screenPosition.Y) + drawOffset;
 
-                TileFraming.SlopedGlowmask(i, j, 0, GlowMask.Texture, drawOffset, null, GetDrawColour(i, j, drawColour), default);
+                TileFraming.SlopedGlowmask(in tileCache, i, j, GlowMask.Texture, drawOffset, null, GetDrawColour(i, j, drawColour), default);
             }
         }
         private Color GetDrawColour(int i, int j, Color colour)

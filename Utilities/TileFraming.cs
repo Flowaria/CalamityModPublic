@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using CalamityMod.Tiles.Abyss;
 using CalamityMod.Tiles.Abyss.AbyssAmbient;
 using CalamityMod.Tiles.Astral;
@@ -14,6 +15,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -50,7 +52,30 @@ namespace CalamityMod
                 BlendSheet = blendSheet;
             }
         }
-        
+
+        public static readonly byte[,] Variation4x4_012_Low0 = new byte[4, 4]
+        {
+            { 0, 2, 2, 1 },
+            { 2, 0, 0, 2 },
+            { 1, 2, 1, 0 },
+            { 2, 2, 2, 2 }
+        };
+
+        public static readonly byte[,] Variation4x4_01_Low0 = new byte[4, 4]
+        {
+            { 0, 1, 1, 0 },
+            { 0, 0, 0, 1 },
+            { 1, 1, 0, 0 },
+            { 1, 1, 1, 1 },
+        };
+
+        public static readonly byte[,] Variation3x3_01234_Low3 = new byte[3, 3]
+        {
+            { 0, 2, 4 },
+            { 1, 3, 0 },
+            { 2, 4, 1 }
+        };
+
         private static int[][] PlantCheckAgainst;
         private static Dictionary<ushort, ushort> VineToGrass;
 
@@ -145,6 +170,32 @@ namespace CalamityMod
             VineToGrass?.Clear();
             VineToGrass = null;
             tileMergeTypes = null;
+        }
+        #endregion
+
+        #region Tile Variation Helpers
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static byte GetVariation4x4_012_Low0(int i, int j)
+        {
+            int ii = i & 0b0011;
+            int jj = j & 0b0011;
+            return Variation4x4_012_Low0[ii, jj];
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static byte GetVariation4x4_01_Low0(int i, int j)
+        {
+            int ii = i & 0b0011;
+            int jj = j & 0b0011;
+            return Variation4x4_01_Low0[ii, jj];
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static byte GetVariation3x3_01234_Low3(int i, int j)
+        {
+            int ii = i % 3;
+            int jj = j % 3;
+            return Variation3x3_01234_Low3[ii, jj];
         }
         #endregion
 
@@ -1227,18 +1278,109 @@ namespace CalamityMod
             #endregion
         }
 
-        internal static void SlopedGlowmask(int i, int j, int type, Texture2D texture, Vector2 position, Rectangle? sourceRectangle, Color drawColor, Vector2 positionOffset, bool overrideTileFrame = false)
+        // Light weight SlopedGlowMask
+        internal static void SingleTileGlowMask(TileDrawInfo drawData, Texture2D glowMask, Vector2 pos, Color drawColor)
         {
-            Tile tile = Main.tile[i, j];
+            var tileCache = drawData.tileCache;
 
+            int frameX = drawData.tileFrameX + drawData.addFrX;
+            int frameY = drawData.tileFrameY + drawData.addFrY;
+
+            int width = drawData.tileWidth;
+            int height = drawData.tileHeight;
+
+            Rectangle drawRect = new Rectangle(frameX, frameY, width, height);
+
+            float scale = 1.0f;
+            float rotation = 0.0f;
+
+            if (tileCache.Slope == SlopeType.Solid)
+            {
+                // Half Block, Copy top 8 pixels
+                // halfBrickHeight is only set when tile is half Block
+                drawRect.Height -= drawData.halfBrickHeight;
+                pos.Y += drawData.halfBrickHeight;
+                Main.spriteBatch.Draw(glowMask, pos, drawRect, drawColor, rotation, Vector2.Zero, scale, drawData.tileSpriteEffect, 0.0f);
+                return;
+            }
+
+            int step = 1;
+            if (tileCache.BottomSlope)
+            {
+                drawRect.Height = step;
+
+                // Bottom-Solid Slope - ◢ ◣
+                for (int segWidth = 0; segWidth < width; segWidth += step)
+                {
+                    // Left-Solid Slope - ◣
+                    if (tileCache.LeftSlope)
+                    {
+
+                    }
+                    // Right-Solid Slope - ◢
+                    else
+                    {
+                        
+                    }
+
+                    pos.Y -= step;
+                }
+            }
+            else if (tileCache.TopSlope)
+            {
+                drawRect.Height = step;
+
+                //Top-Solid Slope - ◥ ◤
+                for (int segWidth = width; segWidth > 0; segWidth -= step)
+                {
+                    // Left-Solid Slope - ◤
+                    if (tileCache.LeftSlope)
+                    {
+
+                        Main.spriteBatch.Draw(glowMask, pos, drawRect, drawColor, rotation, Vector2.Zero, scale, drawData.tileSpriteEffect, 0.0f);
+                    }
+                    // Right-Solid Slope - ◥
+                    else
+                    {
+
+                    }
+
+                    pos.Y -= step;
+                }
+            }
+            else
+            {
+                // I don't even know if it's possible case...
+            }
+
+            switch (tileCache.Slope)
+            {
+                case SlopeType.Solid:
+                    Main.spriteBatch.Draw(glowMask, pos, drawRect, drawColor, rotation, Vector2.Zero, scale, drawData.tileSpriteEffect, 0.0f);
+                    break;
+
+                case SlopeType.SlopeUpLeft:
+
+                    break;
+
+                case SlopeType.SlopeUpRight:
+
+                    break;
+
+                case SlopeType.SlopeDownLeft:
+
+                    break;
+
+                case SlopeType.SlopeDownRight:
+
+                    break;
+            }
+        }
+
+        internal static void SlopedGlowmask(in Tile tile, int i, int j, Texture2D texture, Vector2 position, Rectangle? sourceRectangle, Color drawColor, Vector2 positionOffset)
+        {
             int TileFrameX = tile.TileFrameX;
             int TileFrameY = tile.TileFrameY;
-
-            if (overrideTileFrame)
-            {
-                TileFrameX = 0;
-                TileFrameY = 0;
-            }
 
             int width = 16;
             int height = 16;
@@ -1260,11 +1402,11 @@ namespace CalamityMod
             Vector2 drawCoordinates = location + offsets;
             if ((tile.Slope == 0 && !tile.IsHalfBlock) || (Main.tileSolid[tile.TileType] && Main.tileSolidTop[tile.TileType])) //second one should be for platforms
             {
-                Main.spriteBatch.Draw(texture, drawCoordinates, new Rectangle(TileFrameX, TileFrameY, width, height), drawColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+                Main.spriteBatch.Draw(texture, drawCoordinates, new Rectangle(TileFrameX, TileFrameY, width, height), drawColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 1f);
             }
             else if (tile.IsHalfBlock)
             {
-                Main.spriteBatch.Draw(texture, new Vector2(drawCoordinates.X, drawCoordinates.Y + 8), new Rectangle(TileFrameX, TileFrameY, width, 8), drawColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+                Main.spriteBatch.Draw(texture, new Vector2(drawCoordinates.X, drawCoordinates.Y + 8), new Rectangle(TileFrameX, TileFrameY, width, 8), drawColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 1f);
             }
             else
             {
@@ -1291,12 +1433,12 @@ namespace CalamityMod
 
                         TileFrame = new Rectangle(TileFrameX + length, TileFrameY, 2, height2);
                         drawPos = new Vector2(iX16 + length, jX16 + aX2) + offsets;
-                        Main.spriteBatch.Draw(texture, drawPos, TileFrame, drawColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+                        Main.spriteBatch.Draw(texture, drawPos, TileFrame, drawColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, -0.001f);
                     }
 
                     TileFrame = new Rectangle(TileFrameX, TileFrameY + 14, 16, 2);
                     drawPos = new Vector2(iX16, jX16 + 14) + offsets;
-                    Main.spriteBatch.Draw(texture, drawPos, TileFrame, drawColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+                    Main.spriteBatch.Draw(texture, drawPos, TileFrame, drawColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, -0.001f);
                 }
                 else
                 {
@@ -1318,14 +1460,14 @@ namespace CalamityMod
 
                         TileFrame = new Rectangle(TileFrameX + length, TileFrameY + 16 - height2, 2, height2);
                         drawPos = new Vector2(iX16 + length, jX16) + offsets;
-                        Main.spriteBatch.Draw(texture, drawPos, TileFrame, drawColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+                        Main.spriteBatch.Draw(texture, drawPos, TileFrame, drawColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, -0.001f);
                     }
 
                     drawPos = new Vector2(iX16, jX16) + offsets;
                     if (tile.TileType != ModContent.TileType<EutrophicGlass>())
                     {
                         TileFrame = new Rectangle(TileFrameX, TileFrameY, 16, 2);
-                        Main.spriteBatch.Draw(texture, drawPos, TileFrame, drawColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+                        Main.spriteBatch.Draw(texture, drawPos, TileFrame, drawColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, -0.001f);
                     }
                 }
             }

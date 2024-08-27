@@ -28,6 +28,13 @@ namespace CalamityMod.Tiles.FurnitureProfaned
             AddMapEntry(new Color(122, 66, 59));
             AnimationFrameHeight = 90;
         }
+
+        public override void Unload()
+        {
+            GlowMask?.Unload();
+            GlowMask = null;
+        }
+
         int animationFrameWidth = 234;
 
         public override bool CreateDust(int i, int j, ref int type)
@@ -45,8 +52,9 @@ namespace CalamityMod.Tiles.FurnitureProfaned
 
         public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
         {
-            int xPos = Main.tile[i, j].TileFrameX;
-            int yPos = Main.tile[i, j].TileFrameY;
+            var tileCache = Main.tile[i, j];
+            int xPos = tileCache.TileFrameX;
+            int yPos = tileCache.TileFrameY;
             int xOffset = i % 2;
             int yOffset = j % 2;
             xOffset *= animationFrameWidth;
@@ -61,7 +69,7 @@ namespace CalamityMod.Tiles.FurnitureProfaned
                 Color drawColour = GetDrawColour(i, j, new Color(128, 128, 128, 128));
                 Tile trackTile = Main.tile[i, j];
 
-                TileFraming.SlopedGlowmask(i, j, 0, GlowMask.Texture, drawOffset, null, GetDrawColour(i, j, drawColour), default);
+                TileFraming.SlopedGlowmask(in tileCache, i, j, GlowMask.Texture, drawOffset, null, GetDrawColour(i, j, drawColour), default);
             }
         }
 

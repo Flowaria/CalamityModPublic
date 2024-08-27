@@ -26,6 +26,12 @@ namespace CalamityMod.Tiles.FurnitureStratus
             AddMapEntry(new Color(53, 57, 74));
         }
 
+        public override void Unload()
+        {
+            GlowMask?.Unload();
+            GlowMask = null;
+        }
+
         public override bool CreateDust(int i, int j, ref int type)
         {
             Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.Stone, 0f, 0f, 1, new Color(100, 130, 150), 1f);
@@ -40,8 +46,9 @@ namespace CalamityMod.Tiles.FurnitureStratus
 
         public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
         {
-            int xPos = Main.tile[i, j].TileFrameX;
-            int yPos = Main.tile[i, j].TileFrameY;
+            var tileCache = Main.tile[i, j];
+            int xPos = tileCache.TileFrameX;
+            int yPos = tileCache.TileFrameY;
 
             if (GlowMask.HasContentInFramePos(xPos, yPos))
             {
@@ -50,7 +57,7 @@ namespace CalamityMod.Tiles.FurnitureStratus
                 Vector2 drawOffset = new Vector2(i * 16 - Main.screenPosition.X, j * 16 - Main.screenPosition.Y) + zero;
                 Tile trackTile = Main.tile[i, j];
 
-                TileFraming.SlopedGlowmask(i, j, 0, GlowMask.Texture, drawOffset, null, GetDrawColour(i, j, drawColour), default);
+                TileFraming.SlopedGlowmask(in tileCache, i, j, GlowMask.Texture, drawOffset, null, GetDrawColour(i, j, drawColour), default);
             }
         }
 

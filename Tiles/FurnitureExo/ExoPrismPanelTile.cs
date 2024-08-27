@@ -28,6 +28,12 @@ namespace CalamityMod.Tiles.FurnitureExo
             AnimationFrameHeight = 90;
         }
 
+        public override void Unload()
+        {
+            GlowMask?.Unload();
+            GlowMask = null;
+        }
+
         public override bool CanExplode(int i, int j) => false;
 
         public override bool CreateDust(int i, int j, ref int type)
@@ -57,9 +63,7 @@ namespace CalamityMod.Tiles.FurnitureExo
             {
                 Color drawColour = GetDrawColour(i, j, Color.White);
                 Vector2 drawOffset = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
-                Vector2 drawPosition = new Vector2(i * 16 - Main.screenPosition.X, j * 16 - Main.screenPosition.Y) + drawOffset;
-
-                TileFraming.SlopedGlowmask(i, j, 0, GlowMask.Texture, drawOffset, null, GetDrawColour(i, j, drawColour), default);
+                TileFraming.SlopedGlowmask(in tile, i, j, GlowMask.Texture, drawOffset, null, GetDrawColour(i, j, drawColour), default);
             }
         }
         private Color GetDrawColour(int i, int j, Color colour)

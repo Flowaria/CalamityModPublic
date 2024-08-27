@@ -39,6 +39,12 @@ namespace CalamityMod.Tiles.Abyss.AbyssAmbient
             base.SetStaticDefaults();
         }
 
+        public override void Unload()
+        {
+            GlowMask?.Unload();
+            GlowMask = null;
+        }
+
         public override void KillMultiTile(int i, int j, int frameX, int frameY)
         {
             //explode when broken (troll!)

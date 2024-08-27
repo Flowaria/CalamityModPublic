@@ -53,8 +53,10 @@ namespace CalamityMod.Tiles.Plates
             if (GlowTexture is null || PulseTexture is null)
                 return;
 
-            int xPos = Main.tile[i, j].TileFrameX;
-            int yPos = Main.tile[i, j].TileFrameY;
+            var tileCache = Main.tile[i, j];
+            int xPos = tileCache.TileFrameX;
+            int yPos = tileCache.TileFrameY;
+
             Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
             Vector2 drawOffset = new Vector2(i * 16 - Main.screenPosition.X, j * 16 - Main.screenPosition.Y) + zero;
 
@@ -67,8 +69,7 @@ namespace CalamityMod.Tiles.Plates
             // If these tiles cause lag, comment out the pulse effect code and uncomment this:
             //Color drawColour = GetDrawColour(i, j, new Color(50, 50, 50, 50));
 
-            Tile trackTile = Main.tile[i, j];
-            TileFraming.SlopedGlowmask(i, j, 0, GlowTexture, drawOffset, null, GetDrawColour(i, j, drawColour), default);
+            TileFraming.SlopedGlowmask(in tileCache, i, j, GlowTexture, drawOffset, null, GetDrawColour(i, j, drawColour), default);
         }
 
         private Color GetDrawColour(int i, int j, Color colour)

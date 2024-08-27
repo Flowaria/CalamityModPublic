@@ -29,6 +29,13 @@ namespace CalamityMod.Tiles.FurnitureVoid
             MineResist = 2.1f;
             AddMapEntry(new Color(27, 24, 31));
         }
+
+        public override void Unload()
+        {
+            GlowMask?.Unload();
+            GlowMask = null;
+        }
+
         int animationFrameWidth = 288;
 
         public override bool CreateDust(int i, int j, ref int type)
@@ -39,186 +46,15 @@ namespace CalamityMod.Tiles.FurnitureVoid
 
         public override void AnimateIndividualTile(int type, int i, int j, ref int frameXOffset, ref int frameYOffset)
         {
-            int uniqueAnimationFrameX = 0;
-            int xPos = i % 4;
-            int yPos = j % 4;
-            switch (xPos)
-            {
-                case 0:
-                    switch (yPos)
-                    {
-                        case 0:
-                            uniqueAnimationFrameX = 0;
-                            break;
-                        case 1:
-                            uniqueAnimationFrameX = 0;
-                            break;
-                        case 2:
-                            uniqueAnimationFrameX = 1;
-                            break;
-                        case 3:
-                            uniqueAnimationFrameX = 1;
-                            break;
-                        default:
-                            uniqueAnimationFrameX = 0;
-                            break;
-                    }
-                    break;
-                case 1:
-                    switch (yPos)
-                    {
-                        case 0:
-                            uniqueAnimationFrameX = 1;
-                            break;
-                        case 1:
-                            uniqueAnimationFrameX = 0;
-                            break;
-                        case 2:
-                            uniqueAnimationFrameX = 1;
-                            break;
-                        case 3:
-                            uniqueAnimationFrameX = 1;
-                            break;
-                        default:
-                            uniqueAnimationFrameX = 0;
-                            break;
-                    }
-                    break;
-                case 2:
-                    switch (yPos)
-                    {
-                        case 0:
-                            uniqueAnimationFrameX = 1;
-                            break;
-                        case 1:
-                            uniqueAnimationFrameX = 0;
-                            break;
-                        case 2:
-                            uniqueAnimationFrameX = 0;
-                            break;
-                        case 3:
-                            uniqueAnimationFrameX = 1;
-                            break;
-                        default:
-                            uniqueAnimationFrameX = 0;
-                            break;
-                    }
-                    break;
-                case 3:
-                    switch (yPos)
-                    {
-                        case 0:
-                            uniqueAnimationFrameX = 0;
-                            break;
-                        case 1:
-                            uniqueAnimationFrameX = 1;
-                            break;
-                        case 2:
-                            uniqueAnimationFrameX = 0;
-                            break;
-                        case 3:
-                            uniqueAnimationFrameX = 1;
-                            break;
-                        default:
-                            uniqueAnimationFrameX = 0;
-                            break;
-                    }
-                    break;
-            }
-            frameXOffset = uniqueAnimationFrameX * animationFrameWidth;
+            frameXOffset = animationFrameWidth * TileFraming.GetVariation4x4_01_Low0(i, j);
         }
 
         public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
         {
-            int xPos = Main.tile[i, j].TileFrameX;
-            int yPos = Main.tile[i, j].TileFrameY;
-            int xOffset = 0;
-            int relativeXPos = i % 4;
-            int relativeYPos = j % 4;
-            switch (relativeXPos)
-            {
-                case 0:
-                    switch (relativeYPos)
-                    {
-                        case 0:
-                            xOffset = 0;
-                            break;
-                        case 1:
-                            xOffset = 0;
-                            break;
-                        case 2:
-                            xOffset = 1;
-                            break;
-                        case 3:
-                            xOffset = 1;
-                            break;
-                        default:
-                            xOffset = 0;
-                            break;
-                    }
-                    break;
-                case 1:
-                    switch (relativeYPos)
-                    {
-                        case 0:
-                            xOffset = 1;
-                            break;
-                        case 1:
-                            xOffset = 0;
-                            break;
-                        case 2:
-                            xOffset = 1;
-                            break;
-                        case 3:
-                            xOffset = 1;
-                            break;
-                        default:
-                            xOffset = 0;
-                            break;
-                    }
-                    break;
-                case 2:
-                    switch (relativeYPos)
-                    {
-                        case 0:
-                            xOffset = 1;
-                            break;
-                        case 1:
-                            xOffset = 0;
-                            break;
-                        case 2:
-                            xOffset = 0;
-                            break;
-                        case 3:
-                            xOffset = 1;
-                            break;
-                        default:
-                            xOffset = 0;
-                            break;
-                    }
-                    break;
-                case 3:
-                    switch (relativeYPos)
-                    {
-                        case 0:
-                            xOffset = 0;
-                            break;
-                        case 1:
-                            xOffset = 1;
-                            break;
-                        case 2:
-                            xOffset = 0;
-                            break;
-                        case 3:
-                            xOffset = 1;
-                            break;
-                        default:
-                            xOffset = 0;
-                            break;
-                    }
-                    break;
-            }
-            xOffset *= 288;
+            var tileCache = Main.tile[i, j];
+            int xPos = tileCache.TileFrameX;
+            int yPos = tileCache.TileFrameY;
+            int xOffset = animationFrameWidth * TileFraming.GetVariation4x4_01_Low0(i, j);
             xPos += xOffset;
 
             if (GlowMask.HasContentInFramePos(xPos, yPos))
@@ -226,7 +62,6 @@ namespace CalamityMod.Tiles.FurnitureVoid
                 Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
                 Vector2 drawOffset = new Vector2(i * 16 - Main.screenPosition.X, j * 16 - Main.screenPosition.Y) + zero;
                 Color drawColour = GetDrawColour(i, j, new Color(255, 255, 255, 255));
-                Tile trackTile = Main.tile[i, j];
                 float brightness = 1f;
                 float declareThisHereToPreventRunningTheSameCalculationMultipleTimes = Main.GameUpdateCount * 0.007f;
                 brightness *= (float)MathF.Sin(i / 18f + declareThisHereToPreventRunningTheSameCalculationMultipleTimes);
@@ -235,7 +70,7 @@ namespace CalamityMod.Tiles.FurnitureVoid
                 brightness *= (float)MathF.Sin(j * 18f + declareThisHereToPreventRunningTheSameCalculationMultipleTimes);
                 drawColour *= brightness;
 
-                TileFraming.SlopedGlowmask(i, j, 0, GlowMask.Texture, drawOffset, null, GetDrawColour(i, j, drawColour), default);
+                TileFraming.SlopedGlowmask(in tileCache, i, j, GlowMask.Texture, drawOffset, null, GetDrawColour(i, j, drawColour), default);
             }
         }
 

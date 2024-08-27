@@ -41,6 +41,12 @@ namespace CalamityMod.Tiles.Abyss.AbyssAmbient
             base.SetStaticDefaults();
         }
 
+        public override void Unload()
+        {
+            GlowMask?.Unload();
+            GlowMask = null;
+        }
+
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
             r = 0.46f;

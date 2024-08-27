@@ -18,9 +18,13 @@ namespace CalamityMod.Tiles.Abyss
         int animationFrameWidth = 234;
 
         public static readonly SoundStyle MineSound = new("CalamityMod/Sounds/Custom/AbyssGravelMine", 3);
-        
+
+        private int SulphuricDepthsWaterStyle;
+
         public override void SetStaticDefaults()
         {
+            SulphuricDepthsWaterStyle = ModContent.Find<ModWaterStyle>("CalamityMod/SulphuricDepthsWater").Slot;
+
             Main.tileSolid[Type] = true;
             Main.tileBlockLight[Type] = true;
             Main.tileMergeDirt[Type] = true;
@@ -42,7 +46,7 @@ namespace CalamityMod.Tiles.Abyss
         {
             if (Main.LocalPlayer.InModBiome(ModContent.GetInstance<BiomeManagers.AbyssLayer1Biome>()))
             {
-                Main.SceneMetrics.ActiveFountainColor = ModContent.Find<ModWaterStyle>("CalamityMod/SulphuricDepthsWater").Slot;
+                Main.SceneMetrics.ActiveFountainColor = SulphuricDepthsWaterStyle;
             }
         }
 
@@ -58,7 +62,6 @@ namespace CalamityMod.Tiles.Abyss
 
         public override void RandomUpdate(int i, int j)
         {
-
             int vineLength = WorldGen.genRand.Next((int)Main.rockLayer, (int)(Main.rockLayer + (double)Main.maxTilesY * 0.143));
             int nearbyVineCount = 0;
             for (int x = i - 15; x <= i + 15; x++)
@@ -135,93 +138,7 @@ namespace CalamityMod.Tiles.Abyss
 
         public override void AnimateIndividualTile(int type, int i, int j, ref int frameXOffset, ref int frameYOffset)
         {
-            int uniqueAnimationFrameX = 0;
-            int xPos = i % 4;
-            int yPos = j % 4;
-            switch (xPos)
-            {
-                case 0:
-                    switch (yPos)
-                    {
-                        case 0:
-                            uniqueAnimationFrameX = 0;
-                            break;
-                        case 1:
-                            uniqueAnimationFrameX = 2;
-                            break;
-                        case 2:
-                            uniqueAnimationFrameX = 1;
-                            break;
-                        case 3:
-                            uniqueAnimationFrameX = 2;
-                            break;
-                        default:
-                            uniqueAnimationFrameX = 2;
-                            break;
-                    }
-                    break;
-                case 1:
-                    switch (yPos)
-                    {
-                        case 0:
-                            uniqueAnimationFrameX = 2;
-                            break;
-                        case 1:
-                            uniqueAnimationFrameX = 0;
-                            break;
-                        case 2:
-                            uniqueAnimationFrameX = 2;
-                            break;
-                        case 3:
-                            uniqueAnimationFrameX = 2;
-                            break;
-                        default:
-                            uniqueAnimationFrameX = 2;
-                            break;
-                    }
-                    break;
-                case 2:
-                    switch (yPos)
-                    {
-                        case 0:
-                            uniqueAnimationFrameX = 2;
-                            break;
-                        case 1:
-                            uniqueAnimationFrameX = 0;
-                            break;
-                        case 2:
-                            uniqueAnimationFrameX = 1;
-                            break;
-                        case 3:
-                            uniqueAnimationFrameX = 2;
-                            break;
-                        default:
-                            uniqueAnimationFrameX = 2;
-                            break;
-                    }
-                    break;
-                case 3:
-                    switch (yPos)
-                    {
-                        case 0:
-                            uniqueAnimationFrameX = 1;
-                            break;
-                        case 1:
-                            uniqueAnimationFrameX = 2;
-                            break;
-                        case 2:
-                            uniqueAnimationFrameX = 0;
-                            break;
-                        case 3:
-                            uniqueAnimationFrameX = 2;
-                            break;
-                        default:
-                            uniqueAnimationFrameX = 2;
-                            break;
-                    }
-                    break;
-            }
-            frameXOffset = uniqueAnimationFrameX * animationFrameWidth;
+            frameXOffset = animationFrameWidth * TileFraming.GetVariation4x4_012_Low0(i, j);
         }
     }
 }
