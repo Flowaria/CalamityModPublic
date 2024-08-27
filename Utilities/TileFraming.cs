@@ -1278,105 +1278,6 @@ namespace CalamityMod
             #endregion
         }
 
-        // Light weight SlopedGlowMask
-        internal static void SingleTileGlowMask(TileDrawInfo drawData, Texture2D glowMask, Vector2 pos, Color drawColor)
-        {
-            var tileCache = drawData.tileCache;
-
-            int frameX = drawData.tileFrameX + drawData.addFrX;
-            int frameY = drawData.tileFrameY + drawData.addFrY;
-
-            int width = drawData.tileWidth;
-            int height = drawData.tileHeight;
-
-            Rectangle drawRect = new Rectangle(frameX, frameY, width, height);
-
-            float scale = 1.0f;
-            float rotation = 0.0f;
-
-            if (tileCache.Slope == SlopeType.Solid)
-            {
-                // Half Block, Copy top 8 pixels
-                // halfBrickHeight is only set when tile is half Block
-                drawRect.Height -= drawData.halfBrickHeight;
-                pos.Y += drawData.halfBrickHeight;
-                Main.spriteBatch.Draw(glowMask, pos, drawRect, drawColor, rotation, Vector2.Zero, scale, drawData.tileSpriteEffect, 0.0f);
-                return;
-            }
-
-            int step = 1;
-            if (tileCache.BottomSlope)
-            {
-                drawRect.Height = step;
-
-                // Bottom-Solid Slope - ◢ ◣
-                for (int segWidth = 0; segWidth < width; segWidth += step)
-                {
-                    // Left-Solid Slope - ◣
-                    if (tileCache.LeftSlope)
-                    {
-
-                    }
-                    // Right-Solid Slope - ◢
-                    else
-                    {
-                        
-                    }
-
-                    pos.Y -= step;
-                }
-            }
-            else if (tileCache.TopSlope)
-            {
-                drawRect.Height = step;
-
-                //Top-Solid Slope - ◥ ◤
-                for (int segWidth = width; segWidth > 0; segWidth -= step)
-                {
-                    // Left-Solid Slope - ◤
-                    if (tileCache.LeftSlope)
-                    {
-
-                        Main.spriteBatch.Draw(glowMask, pos, drawRect, drawColor, rotation, Vector2.Zero, scale, drawData.tileSpriteEffect, 0.0f);
-                    }
-                    // Right-Solid Slope - ◥
-                    else
-                    {
-
-                    }
-
-                    pos.Y -= step;
-                }
-            }
-            else
-            {
-                // I don't even know if it's possible case...
-            }
-
-            switch (tileCache.Slope)
-            {
-                case SlopeType.Solid:
-                    Main.spriteBatch.Draw(glowMask, pos, drawRect, drawColor, rotation, Vector2.Zero, scale, drawData.tileSpriteEffect, 0.0f);
-                    break;
-
-                case SlopeType.SlopeUpLeft:
-
-                    break;
-
-                case SlopeType.SlopeUpRight:
-
-                    break;
-
-                case SlopeType.SlopeDownLeft:
-
-                    break;
-
-                case SlopeType.SlopeDownRight:
-
-                    break;
-            }
-        }
-
         internal static void SlopedGlowmask(in Tile tile, int i, int j, Texture2D texture, Rectangle? sourceRectangle, Color drawColor, Vector2 positionOffset)
         {
             int TileFrameX = tile.TileFrameX;
@@ -1393,13 +1294,12 @@ namespace CalamityMod
 
             int iX16 = i * 16;
             int jX16 = j * 16;
-            Vector2 location = new Vector2(iX16, jX16);
-            Vector2 zero = new Vector2(Main.offScreenRange, Main.offScreenRange);
-            if (Main.drawToScreen)
-                zero = Vector2.Zero;
 
+            Vector2 location = new Vector2(iX16, jX16);
+            Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange, Main.offScreenRange);
             Vector2 offsets = -Main.screenPosition + zero + positionOffset;
             Vector2 drawCoordinates = location + offsets;
+
             if ((tile.Slope == 0 && !tile.IsHalfBlock) || (Main.tileSolid[tile.TileType] && Main.tileSolidTop[tile.TileType])) //second one should be for platforms
             {
                 Main.spriteBatch.Draw(texture, drawCoordinates, new Rectangle(TileFrameX, TileFrameY, width, height), drawColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 1f);
@@ -1464,7 +1364,7 @@ namespace CalamityMod
                     }
 
                     drawPos = new Vector2(iX16, jX16) + offsets;
-                    if (tile.TileType != ModContent.TileType<EutrophicGlass>())
+                    if (tile.TileType != EutrophicGlass.TypeCache)
                     {
                         TileFrame = new Rectangle(TileFrameX, TileFrameY, 16, 2);
                         Main.spriteBatch.Draw(texture, drawPos, TileFrame, drawColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, -0.001f);

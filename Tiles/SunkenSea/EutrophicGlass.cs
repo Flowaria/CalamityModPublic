@@ -13,8 +13,12 @@ namespace CalamityMod.Tiles.SunkenSea
         private static int sheetWidth = 216;
         private static int sheetHeight = 72;
 
+        public static int TypeCache;
+
         public override void SetStaticDefaults()
         {
+            TypeCache = Type;
+
             Main.tileSolid[Type] = true;
             Main.tileBlockLight[Type] = false;
             CalamityUtils.MergeWithGeneral(Type);

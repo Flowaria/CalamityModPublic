@@ -76,7 +76,7 @@ namespace CalamityMod.Tiles.Abyss
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
             float brightness = 0.7f;
-            float lightspeed = Main.GameUpdateCount * 0.01f;
+            float lightspeed = (float)(Main.timeForVisualEffects * 0.01);
             brightness *= (float)MathF.Sin(i / 60f + lightspeed);
             brightness += 0.3f;
             r = 1f;

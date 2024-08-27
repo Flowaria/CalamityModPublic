@@ -22,15 +22,16 @@ namespace CalamityMod.Tiles
 
         public FramedGlowMask GlowMask;
 
-        internal static Dictionary<ushort, GlowMaskTile> InstanceRegistry;
+        internal static GlowMaskTile[] InstanceLookup; // This Lookup is Array for performances sake
 
         public abstract string GlowMaskAsset { get; }
 
         public sealed override void SetStaticDefaults()
         {
             GlowMask = new(GlowMaskAsset, 18, 18);
-            InstanceRegistry ??= [];
-            InstanceRegistry[Type] = this;
+
+            InstanceLookup ??= new GlowMaskTile[TileLoader.TileCount];
+            InstanceLookup[Type] = this;
 
             SetupStatic();
         }
@@ -40,8 +41,7 @@ namespace CalamityMod.Tiles
             GlowMask?.Unload();
             GlowMask = null;
 
-            InstanceRegistry?.Clear();
-            InstanceRegistry = null;
+            InstanceLookup = null;
 
             OnUnload();
         }

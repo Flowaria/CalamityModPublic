@@ -40,8 +40,6 @@ namespace CalamityMod.Tiles.Abyss
 
         int animationFrameWidth = 234;
 
-        
-
         public override bool CreateDust(int i, int j, ref int type)
         {
             Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.DungeonSpirit, 0f, 0f, 1, new Color(128, 128, 128), 1f);
@@ -88,7 +86,7 @@ namespace CalamityMod.Tiles.Abyss
             brightness *= (float)MathF.Sin(j / 18f + timeFactor);
             brightness *= (float)MathF.Sin(i * 18f + timeFactor);
             brightness *= (float)MathF.Sin(j * 18f + timeFactor);
-            brightness *= 0.5f;
+            //brightness *= 0.95f;
             return brightness;
         }
     }

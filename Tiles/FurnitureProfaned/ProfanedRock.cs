@@ -11,6 +11,8 @@ namespace CalamityMod.Tiles.FurnitureProfaned
 {
     public class ProfanedRock : GlowMaskTile
     {
+        public const int AnimationFrameWidth = 288;
+
         public override string GlowMaskAsset => "CalamityMod/Tiles/FurnitureProfaned/ProfanedRockGlow";
 
         public override void SetupStatic()
@@ -29,7 +31,7 @@ namespace CalamityMod.Tiles.FurnitureProfaned
             AddMapEntry(new Color(84, 38, 33));
         }
 
-        int animationFrameWidth = 288;
+        
 
         public override bool CreateDust(int i, int j, ref int type)
         {
@@ -40,7 +42,7 @@ namespace CalamityMod.Tiles.FurnitureProfaned
 
         public override void AnimateIndividualTile(int type, int i, int j, ref int frameXOffset, ref int frameYOffset)
         {
-            frameXOffset = animationFrameWidth * TileFraming.GetVariation4x4_012_Low0(i, j);
+            frameXOffset = AnimationFrameWidth * TileFraming.GetVariation4x4_012_Low0(i, j);
         }
 
         public override float GetGlowMaskBrightness(int i, int j, TileDrawInfo drawData)

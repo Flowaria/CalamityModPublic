@@ -14,10 +14,12 @@ namespace CalamityMod.Tiles.Ores
 {
     public class PerennialOre : GlowMaskTile
     {
+        public const int AnimationFrameWidth = 234;
+
+        public override string GlowMaskAsset => "CalamityMod/Tiles/Ores/PerennialOreGlow";
+
         public override void SetupStatic()
         {
-            GlowMask = new("CalamityMod/Tiles/Ores/PerennialOreGlow", 18, 18);
-
             Main.tileLighted[Type] = true;
             Main.tileSolid[Type] = true;
             Main.tileMergeDirt[Type] = true;
@@ -42,9 +44,9 @@ namespace CalamityMod.Tiles.Ores
             this.RegisterUniversalMerge(TileID.Mud, "CalamityMod/Tiles/Merges/MudMerge");
         }
 
-        int animationFrameWidth = 234;
+        
 
-        public override string GlowMaskAsset => throw new NotImplementedException();
+        
 
         public override bool CanExplode(int i, int j)
         {
@@ -105,7 +107,7 @@ namespace CalamityMod.Tiles.Ores
 
         public override void AnimateIndividualTile(int type, int i, int j, ref int frameXOffset, ref int frameYOffset)
         {
-            frameXOffset = animationFrameWidth * TileFraming.GetVariation4x4_012_Low0(i, j);
+            frameXOffset = AnimationFrameWidth * TileFraming.GetVariation4x4_012_Low0(i, j);
         }
 
         public override float GetGlowMaskBrightness(int i, int j, TileDrawInfo drawData)

@@ -78,7 +78,7 @@ namespace CalamityMod.ILEditing
             On_Player.UpdateItemDye += FindCalamityItemDyeShader;
             On_AWorldListItem.GetDifficulty += GetDifficultyOverride;
             On_Item.GetShimmered += ShimmerEffectEdits;
-            On_TileDrawing.DrawSingleTile += DrawGlowMaskAfterTileDraw;
+            On_TileDrawing.DrawSingleTile += GlowMaskTileRender;
 
             // Mana Burn (Chaos Stone) and Chalice of the Blood God
             IL_Player.ApplyLifeAndOrMana += ManaSicknessAndChaliceBufferHeal;

@@ -1544,7 +1544,7 @@ namespace CalamityMod.ILEditing
             {
                 return;
             }
-            
+
             // Go through the World Selection Difficulty System's World Difficulty list backwards and choose the latest difficulty that applies
             for (int i = WorldSelectionDifficultySystem.WorldDifficulties.Count - 1; i >= 0; i--)
             {
@@ -1594,42 +1594,46 @@ namespace CalamityMod.ILEditing
         }
         #endregion
 
-        private void DrawGlowMaskAfterTileDraw(On_TileDrawing.orig_DrawSingleTile orig, TileDrawing self, TileDrawInfo drawData, bool solidLayer, int waterStyleOverride, Vector2 screenPosition, Vector2 screenOffset, int tileX, int tileY)
+        #region Optimized GlowMask Rendering on Tile
+        private static void GlowMaskTileRender(On_TileDrawing.orig_DrawSingleTile orig, TileDrawing self, TileDrawInfo drawData, bool solidLayer, int waterStyleOverride, Vector2 screenPosition, Vector2 screenOffset, int tileX, int tileY)
         {
             orig(self, drawData, solidLayer, waterStyleOverride, screenPosition, screenOffset, tileX, tileY);
 
-            if (GlowMaskTile.InstanceRegistry.TryGetValue(drawData.typeCache, out var glowMaskTile))
+            var type = drawData.typeCache;
+            if (type < 0 || type >= TileLoader.TileCount)
+                return;
+
+            var glowMaskTile = GlowMaskTile.InstanceLookup[type];
+            if (glowMaskTile is null)
+                return;
+
+            var glowMask = glowMaskTile.GlowMask;
+            if (glowMask is null)
+                return;
+
+            int xPos = drawData.tileFrameX + drawData.addFrX;
+            int yPos = drawData.tileFrameY + drawData.addFrY;
+            if (glowMask.HasContentInFramePos(xPos, yPos))
             {
-                var glowMask = glowMaskTile.GlowMask;
-                if (glowMask is null)
+                var tileCache = drawData.tileCache;
+                int colType = tileCache.TileColor;
+
+                float brightness = glowMaskTile.GetGlowMaskBrightness(tileX, tileY, drawData);
+                if (brightness <= 0.0f)
                     return;
 
-                if (glowMask.Texture is null)
-                    return;
-
-                int xPos = drawData.tileFrameX + drawData.addFrX;
-                int yPos = drawData.tileFrameY + drawData.addFrY;
-                if (glowMask.HasContentInFramePos(xPos, yPos))
+                Color drawColor = glowMaskTile.GetGlowMaskBaseColor();
+                drawColor = drawColor.MultiplyRGBA(new Color(brightness, brightness, brightness, 1.0f));
+                drawColor = glowMaskTile.ColorTint switch
                 {
-                    var tileCache = drawData.tileCache;
-                    int colType = tileCache.TileColor;
+                    GlowMaskTile.PaintColorTint.OnlyByDeepPaint => GlowMaskTile.ApplyPaint(colType, drawColor, deepPaintOnly: true),
+                    GlowMaskTile.PaintColorTint.ByEveryPaint => GlowMaskTile.ApplyPaint(colType, drawColor, deepPaintOnly: false),
+                    _ => drawColor
+                };
 
-                    float brightness = glowMaskTile.GetGlowMaskBrightness(tileX, tileY, drawData);
-                    if (brightness <= float.Epsilon)
-                        return;
-
-                    Color drawColor = glowMaskTile.GetGlowMaskBaseColor();
-                    drawColor *= brightness;
-                    drawColor = glowMaskTile.ColorTint switch
-                    {
-                        GlowMaskTile.PaintColorTint.OnlyByDeepPaint => GlowMaskTile.ApplyPaint(colType, drawColor, deepPaintOnly: true),
-                        GlowMaskTile.PaintColorTint.ByEveryPaint => GlowMaskTile.ApplyPaint(colType, drawColor, deepPaintOnly: false),
-                        _ => drawColor
-                    };
-
-                    TileFraming.SlopedGlowmask(in tileCache, tileX, tileY, glowMask.Texture, null, drawColor, default);
-                }
+                TileFraming.SlopedGlowmask(in tileCache, tileX, tileY, glowMask.Texture, null, drawColor, default);
             }
         }
+        #endregion
     }
 }

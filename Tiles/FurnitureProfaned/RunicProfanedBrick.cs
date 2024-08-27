@@ -11,6 +11,8 @@ namespace CalamityMod.Tiles.FurnitureProfaned
 {
     public class RunicProfanedBrick : GlowMaskTile
     {
+        public const int AnimationFrameWidth = 234;
+
         public override string GlowMaskAsset => "CalamityMod/Tiles/FurnitureProfaned/RunicProfanedBrickGlow";
 
         public override void SetupStatic()
@@ -28,8 +30,6 @@ namespace CalamityMod.Tiles.FurnitureProfaned
             AnimationFrameHeight = 90;
         }
 
-        int animationFrameWidth = 234;
-
         public override bool CreateDust(int i, int j, ref int type)
         {
             Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.GoldCoin, 0f, 0f, 1, new Color(255, 255, 255), 1f);
@@ -39,7 +39,7 @@ namespace CalamityMod.Tiles.FurnitureProfaned
 
         public override void AnimateIndividualTile(int type, int i, int j, ref int frameXOffset, ref int frameYOffset)
         {
-            frameXOffset = i % 2 * animationFrameWidth;
+            frameXOffset = i % 2 * AnimationFrameWidth;
             frameYOffset = j % 2 * AnimationFrameHeight;
         }
 
