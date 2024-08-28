@@ -13,22 +13,12 @@ using Terraria.ObjectData;
 
 namespace CalamityMod.Tiles
 {
-    public class GiantPlanteraBulb : ModTile
+    public class GiantPlanteraBulb : GlowMaskTile
     {
-        public static FramedGlowMask GlowMask { get; private set; }
+        public override string GlowMaskAsset => $"{Texture}Glow";
+        public override PaintColorTint ColorTint => PaintColorTint.None;
 
-        public override void Load()
-        {
-            GlowMask = new($"{Texture}Glow", 18, 18);
-        }
-
-        public override void Unload()
-        {
-            GlowMask?.Unload();
-            GlowMask = null;
-        }
-
-        public override void SetStaticDefaults()
+        public override void SetupStatic()
         {
             // Tile can provide light
             Main.tileLighted[Type] = true;
@@ -198,22 +188,9 @@ namespace CalamityMod.Tiles
             }
         }
 
-        public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
+        public override Color GetGlowMaskColor(int i, int j, TileDrawInfo drawData)
         {
-            var tile = Main.tile[i, j];
-
-            var xPos = tile.TileFrameX;
-            var yPos = tile.TileFrameY + AnimationFrameHeight * Main.tileFrame[Type];
-
-            if (GlowMask.HasContentInFramePos(xPos, yPos))
-            {
-                spriteBatch.Draw(
-                    GlowMask.Texture,
-                    new Vector2(i * 16, j * 16 + 2) - Main.screenPosition + CalamityUtils.TileDrawOffset,
-                    new Rectangle(xPos, yPos, 16, 16),
-                    Color.Yellow
-                );
-            }
+            return Color.Yellow;
         }
     }
 }

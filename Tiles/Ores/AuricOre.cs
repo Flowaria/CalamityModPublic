@@ -23,8 +23,6 @@ namespace CalamityMod.Tiles.Ores
 
         public override void SetupStatic()
         {
-            GlowMask = new("CalamityMod/Tiles/Ores/AuricOreGlow", 18, 18);
-
             AnimationFrameHeight = 90;
             Main.tileLighted[Type] = true;
             Main.tileSolid[Type] = true;

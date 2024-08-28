@@ -3,19 +3,18 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.FurnitureExo
 {
-    public class ExoPrismPanelTile : ModTile
+    public class ExoPrismPanelTile : GlowMaskTile
     {
-        internal static FramedGlowMask GlowMask;
+        public override string GlowMaskAsset => "CalamityMod/Tiles/FurnitureExo/ExoPrismPanelTileGlow";
 
-        public override void SetStaticDefaults()
+        public override void SetupStatic()
         {
-            GlowMask = new("CalamityMod/Tiles/FurnitureExo/ExoPrismPanelTileGlow", 18, 18);
-
             Main.tileSolid[Type] = true;
             Main.tileBlockLight[Type] = true;
 
@@ -26,12 +25,6 @@ namespace CalamityMod.Tiles.FurnitureExo
             HitSound = SoundID.Shatter;
             AddMapEntry(new Color(52, 67, 78));
             AnimationFrameHeight = 90;
-        }
-
-        public override void Unload()
-        {
-            GlowMask?.Unload();
-            GlowMask = null;
         }
 
         public override bool CanExplode(int i, int j) => false;
@@ -48,34 +41,9 @@ namespace CalamityMod.Tiles.FurnitureExo
             frameYOffset = frameOffset * AnimationFrameHeight;
         }
 
-        public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
+        public override Color GetGlowMaskColor(int i, int j, TileDrawInfo drawData)
         {
-            // If the cached textures don't exist for some reason, don't bother using them.
-            if (GlowMask.Texture is null)
-                return;
-
-            Tile tile = CalamityUtils.ParanoidTileRetrieval(i, j);
-            int xPos = tile.TileFrameX;
-            int frameOffset = (i + j) % 6 * AnimationFrameHeight;
-            int yPos = tile.TileFrameY + frameOffset;
-
-            if (GlowMask.HasContentInFramePos(xPos, yPos))
-            {
-                Color drawColour = GetDrawColour(i, j, Color.White);
-                TileFraming.SlopedGlowmask(in tile, i, j, GlowMask.Texture, null, GetDrawColour(i, j, drawColour), default);
-            }
-        }
-        private Color GetDrawColour(int i, int j, Color colour)
-        {
-            int colType = Main.tile[i, j].TileColor;
-            Color paintCol = WorldGen.paintColor(colType);
-            if (colType >= 13 && colType <= 24)
-            {
-                colour.R = (byte)(paintCol.R / 255f * colour.R);
-                colour.G = (byte)(paintCol.G / 255f * colour.G);
-                colour.B = (byte)(paintCol.B / 255f * colour.B);
-            }
-            return colour;
+            return Color.White;
         }
     }
 }

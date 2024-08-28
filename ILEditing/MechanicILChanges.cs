@@ -1631,8 +1631,19 @@ namespace CalamityMod.ILEditing
 
                 drawColor.A = 255;
 
-                var drawRect = new Rectangle(xPos, yPos, 16, 16);
-                TileFraming.SlopedGlowmask(in tileCache, tileX, tileY, glowMask.Texture, drawRect, drawColor, default);
+                if (Main.tileSolid[type])
+                {
+                    var drawRect = new Rectangle(xPos, yPos, 16, 16);
+                    TileFraming.SlopedGlowmask(in tileCache, tileX, tileY, glowMask.Texture, drawRect, drawColor, default);
+                }
+                else
+                {
+                   
+                    Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange, Main.offScreenRange);
+                    Vector2 drawPos = new Vector2(tileX * 16, tileY * 16 + 2) - Main.screenPosition + zero;
+                    Rectangle drawRect = new Rectangle(xPos, yPos, 16, 16);
+                    Main.spriteBatch.Draw(glowMask.Texture, drawPos, drawRect, drawColor, 0.0f, default, 0.0f, drawData.tileSpriteEffect, 0.0f);
+                }
             }
         }
         #endregion

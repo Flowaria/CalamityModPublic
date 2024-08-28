@@ -91,7 +91,7 @@ namespace CalamityMod.Tiles.Abyss
         {
             float glowbrightness = 1f;
             float glowspeed = (float)(Main.timeForVisualEffects * 0.01);
-            glowbrightness *= (float)MathF.Sin(i / 60f + glowspeed);
+            glowbrightness *= MathF.Sin(i / 60f + glowspeed);
             return Color.White * glowbrightness;
         }
     }

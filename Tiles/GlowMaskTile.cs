@@ -28,12 +28,17 @@ namespace CalamityMod.Tiles
 
         public sealed override void SetStaticDefaults()
         {
+            if (GlowMask != null)
+            {
+                CalamityMod.Instance.Logger.Error($"{Name} has called {nameof(SetStaticDefaults)} themselve! This is not allowed!");
+                return;
+            }
+
             GlowMask = new(GlowMaskAsset, 18, 18);
 
             InstanceLookup ??= new GlowMaskTile[TileLoader.TileCount];
             InstanceLookup[Type] = this;
 
-            CalamityMod.Instance.Logger.Error($"Registered: {Name} {Type}");
             SetupStatic();
         }
 
