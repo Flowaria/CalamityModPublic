@@ -16,34 +16,35 @@ namespace CalamityMod
         /// <summary>
         /// Cached Texture2D reference, null on server
         /// </summary>
-        public Texture2D Texture { get; private set; }
+        public Texture2D Texture; // Leave this as field for performances sake
         
         /// <summary>
         /// X axis's frame count, 0 on server
         /// </summary>
-        public int FrameXCount { get; private set; } = 0;
+        public int FrameXCount => _FrameXCount;
 
         /// <summary>
         /// Y axis's frame count, 0 on server
         /// </summary>
-        public int FrameYCount { get; private set; } = 0;
-        
+        public int FrameYCount => _FrameYCount;
+
         /// <summary>
         /// Pixel width for each frame
         /// </summary>
-        public int FrameWidth { get; private set; }
+        public int FrameWidth => _FrameWidth;
 
         /// <summary>
         /// Pixel height for each frame
         /// </summary>
-        public int FrameHeight { get; private set; }
+        public int FrameHeight => _FrameHeight;
 
+        private int _FrameWidth, _FrameHeight, _FrameXCount, _FrameYCount;
         private readonly bool[,] _HasGlowContent;
 
         public FramedGlowMask(string asset, int frameWidth, int frameHeight, bool pretendEveryFrameHaveGlow = false)
         {
-            FrameWidth = frameWidth;
-            FrameHeight = frameHeight;
+            _FrameWidth = frameWidth;
+            _FrameHeight = frameHeight;
 
             // Don't do anything further on server
             if (Main.dedServ)
@@ -53,8 +54,8 @@ namespace CalamityMod
             if (Texture is null)
                 return;
 
-            FrameXCount = Texture.Width / frameWidth;
-            FrameYCount = Texture.Height / frameHeight;
+            _FrameXCount = Texture.Width / frameWidth;
+            _FrameYCount = Texture.Height / frameHeight;
 
             _HasGlowContent = new bool[FrameXCount, FrameYCount];
 
@@ -113,10 +114,10 @@ namespace CalamityMod
         public void Unload()
         {
             Texture = null;
-            FrameWidth = 0;
-            FrameHeight = 0;
-            FrameXCount = 0;
-            FrameYCount = 0;
+            _FrameWidth = 0;
+            _FrameHeight = 0;
+            _FrameXCount = 0;
+            _FrameYCount = 0;
         }
 
         public bool HasContentInFrameIndex(int xFrame, int yFrame)
@@ -124,10 +125,10 @@ namespace CalamityMod
             if (Texture is null)
                 return false;
 
-            if (xFrame < 0 || xFrame >= FrameXCount)
+            if (xFrame < 0 || xFrame >= _FrameXCount)
                 return false;
 
-            if (yFrame < 0 || yFrame >= FrameYCount)
+            if (yFrame < 0 || yFrame >= _FrameYCount)
                 return false;
 
             return _HasGlowContent[xFrame, yFrame];
@@ -138,13 +139,13 @@ namespace CalamityMod
             if (Texture is null)
                 return false;
 
-            int xFrame = xPos / FrameWidth;
-            int yFrame = yPos / FrameHeight;
+            int xFrame = xPos / _FrameWidth;
+            int yFrame = yPos / _FrameHeight;
 
-            if (xFrame < 0 || xFrame >= FrameXCount)
+            if (xFrame < 0 || xFrame >= _FrameXCount)
                 return false;
 
-            if (yFrame < 0 || yFrame >= FrameYCount)
+            if (yFrame < 0 || yFrame >= _FrameYCount)
                 return false;
 
             return _HasGlowContent[xFrame, yFrame];
