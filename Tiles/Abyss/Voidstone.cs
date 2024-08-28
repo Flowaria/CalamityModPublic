@@ -82,11 +82,11 @@ namespace CalamityMod.Tiles.Abyss
         {
             float brightness = 1f;
             float timeFactor = (float)(Main.timeForVisualEffects * 0.007);
-            brightness *= (float)MathF.Sin(i / 18f + timeFactor);
-            brightness *= (float)MathF.Sin(j / 18f + timeFactor);
-            brightness *= (float)MathF.Sin(i * 18f + timeFactor);
-            brightness *= (float)MathF.Sin(j * 18f + timeFactor);
-            //brightness *= 0.95f;
+            brightness *= MathF.Sin(i / 18f + timeFactor);
+            brightness *= MathF.Sin(j / 18f + timeFactor);
+            brightness *= MathF.Sin(i * 18f + timeFactor);
+            brightness *= MathF.Sin(j * 18f + timeFactor);
+            brightness *= 0.75f;
             return Color.White * brightness;
         }
     }
