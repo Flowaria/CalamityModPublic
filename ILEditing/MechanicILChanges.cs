@@ -1619,6 +1619,9 @@ namespace CalamityMod.ILEditing
                 int colType = tileCache.TileColor;
 
                 Color drawColor = glowMaskTile.GetGlowMaskColor(tileX, tileY, drawData);
+                drawColor.R = Math.Max(drawData.tileLight.R, drawColor.R);
+                drawColor.G = Math.Max(drawData.tileLight.G, drawColor.G);
+                drawColor.B = Math.Max(drawData.tileLight.B, drawColor.B);
                 drawColor = glowMaskTile.ColorTint switch
                 {
                     GlowMaskTile.PaintColorTint.OnlyByDeepPaint => GlowMaskTile.ApplyPaint(colType, drawColor, deepPaintOnly: true),
@@ -1626,7 +1629,10 @@ namespace CalamityMod.ILEditing
                     _ => drawColor
                 };
 
-                TileFraming.SlopedGlowmask(in tileCache, tileX, tileY, glowMask.Texture, null, drawColor, default);
+                drawColor.A = 255;
+
+                var drawRect = new Rectangle(xPos, yPos, 16, 16);
+                TileFraming.SlopedGlowmask(in tileCache, tileX, tileY, glowMask.Texture, drawRect, drawColor, default);
             }
         }
         #endregion

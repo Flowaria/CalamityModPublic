@@ -1280,16 +1280,16 @@ namespace CalamityMod
 
         internal static void SlopedGlowmask(in Tile tile, int i, int j, Texture2D texture, Rectangle? sourceRectangle, Color drawColor, Vector2 positionOffset)
         {
-            int TileFrameX = tile.TileFrameX;
-            int TileFrameY = tile.TileFrameY;
+            int frameX = tile.TileFrameX;
+            int frameY = tile.TileFrameY;
 
             int width = 16;
             int height = 16;
 
             if (sourceRectangle != null)
             {
-                TileFrameX = ((Rectangle)sourceRectangle).X;
-                TileFrameY = ((Rectangle)sourceRectangle).Y;
+                frameX = ((Rectangle)sourceRectangle).X;
+                frameY = ((Rectangle)sourceRectangle).Y;
             }
 
             int iX16 = i * 16;
@@ -1302,11 +1302,11 @@ namespace CalamityMod
 
             if ((tile.Slope == 0 && !tile.IsHalfBlock) || (Main.tileSolid[tile.TileType] && Main.tileSolidTop[tile.TileType])) //second one should be for platforms
             {
-                Main.spriteBatch.Draw(texture, drawCoordinates, new Rectangle(TileFrameX, TileFrameY, width, height), drawColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 1f);
+                Main.spriteBatch.Draw(texture, drawCoordinates, new Rectangle(frameX, frameY, width, height), drawColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
             }
             else if (tile.IsHalfBlock)
             {
-                Main.spriteBatch.Draw(texture, new Vector2(drawCoordinates.X, drawCoordinates.Y + 8), new Rectangle(TileFrameX, TileFrameY, width, 8), drawColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 1f);
+                Main.spriteBatch.Draw(texture, new Vector2(drawCoordinates.X, drawCoordinates.Y + 8), new Rectangle(frameX, frameY, width, 8), drawColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
             }
             else
             {
@@ -1331,14 +1331,14 @@ namespace CalamityMod
                             height2 = 14 - length;
                         }
 
-                        TileFrame = new Rectangle(TileFrameX + length, TileFrameY, 2, height2);
+                        TileFrame = new Rectangle(frameX + length, frameY, 2, height2);
                         drawPos = new Vector2(iX16 + length, jX16 + aX2) + offsets;
-                        Main.spriteBatch.Draw(texture, drawPos, TileFrame, drawColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, -0.001f);
+                        Main.spriteBatch.Draw(texture, drawPos, TileFrame, drawColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
                     }
 
-                    TileFrame = new Rectangle(TileFrameX, TileFrameY + 14, 16, 2);
+                    TileFrame = new Rectangle(frameX, frameY + 14, 16, 2);
                     drawPos = new Vector2(iX16, jX16 + 14) + offsets;
-                    Main.spriteBatch.Draw(texture, drawPos, TileFrame, drawColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, -0.001f);
+                    Main.spriteBatch.Draw(texture, drawPos, TileFrame, drawColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
                 }
                 else
                 {
@@ -1358,16 +1358,16 @@ namespace CalamityMod
                             height2 = 16 - aX2;
                         }
 
-                        TileFrame = new Rectangle(TileFrameX + length, TileFrameY + 16 - height2, 2, height2);
+                        TileFrame = new Rectangle(frameX + length, frameY + 16 - height2, 2, height2);
                         drawPos = new Vector2(iX16 + length, jX16) + offsets;
-                        Main.spriteBatch.Draw(texture, drawPos, TileFrame, drawColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, -0.001f);
+                        Main.spriteBatch.Draw(texture, drawPos, TileFrame, drawColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
                     }
 
                     drawPos = new Vector2(iX16, jX16) + offsets;
                     if (tile.TileType != EutrophicGlass.TypeCache)
                     {
-                        TileFrame = new Rectangle(TileFrameX, TileFrameY, 16, 2);
-                        Main.spriteBatch.Draw(texture, drawPos, TileFrame, drawColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, -0.001f);
+                        TileFrame = new Rectangle(frameX, frameY, 16, 2);
+                        Main.spriteBatch.Draw(texture, drawPos, TileFrame, drawColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
                     }
                 }
             }

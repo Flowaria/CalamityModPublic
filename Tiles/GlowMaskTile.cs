@@ -33,6 +33,7 @@ namespace CalamityMod.Tiles
             InstanceLookup ??= new GlowMaskTile[TileLoader.TileCount];
             InstanceLookup[Type] = this;
 
+            CalamityMod.Instance.Logger.Error($"Registered: {Name} {Type}");
             SetupStatic();
         }
 
@@ -51,7 +52,6 @@ namespace CalamityMod.Tiles
         public virtual void OnUnload() { }
 
         public virtual PaintColorTint ColorTint => PaintColorTint.OnlyByDeepPaint;
-        public virtual bool GlowMaskAffectedByOnlyDeepPaint => true;
 
         public abstract Color GetGlowMaskColor(int i, int j, TileDrawInfo drawData);
 
@@ -61,10 +61,7 @@ namespace CalamityMod.Tiles
                 return color;
 
             Color paintCol = WorldGen.paintColor(paintType);
-            color.R = (byte)(paintCol.R / 255f * color.R);
-            color.G = (byte)(paintCol.G / 255f * color.G);
-            color.B = (byte)(paintCol.B / 255f * color.B);
-
+            color = color.MultiplyRGB(paintCol);
             return color;
         }
 
