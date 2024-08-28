@@ -34,23 +34,35 @@ namespace CalamityMod.Systems
         }
     }
 
-    internal static class CalamityWaterLoader
+    internal class CalamityWaterLoader : ModSystem
     {
+        public bool LoadedAny = false;
+
+        private static WaterStylesLoader _Loader;
+
+        public override void Load()
+        {
+            _Loader = LoaderManager.Get<WaterStylesLoader>();
+        }
+
+        public override void Unload()
+        {
+            _Loader = null;
+        }
+
         internal static void ModifyLightSetup(int i, int j, int type, ref float r, ref float g, ref float b)
         {
-            CalamityModWaterStyle styles = (CalamityModWaterStyle)LoaderManager.Get<WaterStylesLoader>().Get(type);
-            if (styles != null)
+            if (_Loader.Get(type) is CalamityModWaterStyle style)
             {
-                styles?.ModifyLight(i, j, ref r, ref g, ref b);
+                style.ModifyLight(i, j, ref r, ref g, ref b);
             }
         }
 
         internal static void DrawColorSetup(int x, int y, int type, ref VertexColors liquidColor, bool isSlope = false)
         {
-            CalamityModWaterStyle styles = (CalamityModWaterStyle)LoaderManager.Get<WaterStylesLoader>().Get(type);
-            if (styles != null)
+            if (_Loader.Get(type) is CalamityModWaterStyle style)
             {
-                styles?.DrawColor(x, y, ref liquidColor, isSlope);
+                style.DrawColor(x, y, ref liquidColor, isSlope);
             }
         }
     }

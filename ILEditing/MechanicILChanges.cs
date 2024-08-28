@@ -1118,10 +1118,12 @@ namespace CalamityMod.ILEditing
             {
                 if (tile.LiquidType == LiquidID.Water)
                 {
+                    tile.TilePos(out var x, out var y);
+
                     float R = 0f;
                     float G = 0f;
                     float B = 0f;
-                    CalamityWaterLoader.ModifyLightSetup(tile.X(), tile.Y(), Main.waterStyle, ref R, ref G, ref B);
+                    CalamityWaterLoader.ModifyLightSetup(x, y, Main.waterStyle, ref R, ref G, ref B);
                     if (lightColor.X < R)
                     {
                         lightColor.X = R;
@@ -1137,11 +1139,13 @@ namespace CalamityMod.ILEditing
                 }
                 else if (tile.LiquidType == LiquidID.Lava && CalamityMod.Instance.biomeLava == null)
                 {
+                    tile.TilePos(out var x, out var y);
+
                     Vector3 lavaLight = new Vector3(0.55f, 0.33f, 0.11f);
                     float R = CalamityMod.LavaStyle == 0 ? lavaLight.X : 0f;
                     float G = CalamityMod.LavaStyle == 0 ? lavaLight.Y : 0f;
                     float B = CalamityMod.LavaStyle == 0 ? lavaLight.Z : 0f;
-                    LavaStylesLoader.ModifyLightSetup(tile.X(), tile.Y(), CalamityMod.LavaStyle, ref R, ref G, ref B);
+                    LavaStylesLoader.ModifyLightSetup(x, y, CalamityMod.LavaStyle, ref R, ref G, ref B);
                     for (int j = 0; j < LavaStylesLoader.TotalCount; j++)
                     {
                         if (CalamityMod.lavaAlpha[j] > 0f && j != CalamityMod.LavaStyle)
@@ -1149,11 +1153,11 @@ namespace CalamityMod.ILEditing
                             float r = j == 0 ? lavaLight.X : 0f;
                             float g = j == 0 ? lavaLight.Y : 0f;
                             float b = j == 0 ? lavaLight.Z : 0f;
-                            LavaStylesLoader.ModifyLightSetup(tile.X(), tile.Y(), j, ref r, ref g, ref b);
+                            LavaStylesLoader.ModifyLightSetup(x, y, j, ref r, ref g, ref b);
                             float r2 = CalamityMod.LavaStyle == 0 ? lavaLight.X : 0f;
                             float g2 = CalamityMod.LavaStyle == 0 ? lavaLight.Y : 0f;
                             float b2 = CalamityMod.LavaStyle == 0 ? lavaLight.Z : 0f;
-                            LavaStylesLoader.ModifyLightSetup(tile.X(), tile.Y(), CalamityMod.LavaStyle, ref r2, ref g2, ref b2);
+                            LavaStylesLoader.ModifyLightSetup(x, y, CalamityMod.LavaStyle, ref r2, ref g2, ref b2);
                             R = Single.Lerp(r, r2, CalamityMod.lavaAlpha[CalamityMod.LavaStyle]);
                             G = Single.Lerp(g, g2, CalamityMod.lavaAlpha[CalamityMod.LavaStyle]);
                             B = Single.Lerp(b, b2, CalamityMod.lavaAlpha[CalamityMod.LavaStyle]);
@@ -1235,37 +1239,67 @@ namespace CalamityMod.ILEditing
         {
             ILCursor cursor = new ILCursor(il);
 
-            if (!cursor.TryGotoNext(MoveType.Before, c => c.MatchLdcI4(0), c => c.MatchStloc(19), c => c.MatchLdloc(11), c => c.MatchBrfalse(out _)))
+            var loaderGetMethod = typeof(LoaderManager)
+                .GetMethod(nameof(LoaderManager.Get))
+                .MakeGenericMethod([typeof(WaterStylesLoader)]);
+            if (loaderGetMethod is null)
             {
                 LogFailure("Liquid Slope Draw Colors", "Could not locate the liquid slope vertex colors for drawing");
                 return;
             }
 
-            cursor.Emit(OpCodes.Ldarg, 6);
-            cursor.Emit(OpCodes.Ldarg, 7);
-            cursor.Emit(OpCodes.Ldloca, 14);
-            cursor.Emit(OpCodes.Ldloc, 11);
-            cursor.Emit(OpCodes.Ldloc, 10);
+            var getTotalCountGetter = typeof(Loader)
+                .GetProperty("TotalCount", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static)
+                .GetMethod;
 
-            cursor.EmitDelegate((int x, int y, ref VertexColors initialColor, bool flag6, int num2) =>
+            if (!cursor.TryGotoNext(MoveType.After,
+                c => c.MatchCall(loaderGetMethod),
+                c => c.MatchCallOrCallvirt(getTotalCountGetter)))
             {
-                if (flag6)
+                LogFailure("Liquid Slope Draw Colors", "Could not locate the liquid slope vertex colors for drawing");
+                return;
+            }
+
+            // callvirt Loader.TotalCount
+            // [We are here]
+            // stloc.s  totalCount
+
+            // Starts from callvirt (ret: int)
+            // Stack now have TotalCount and about to pop by local variable, so:
+            cursor.EmitDup(); // Duplicate TotalCount and Push to Stack
+            cursor.EmitLdarg(8); // Push tileCache
+            cursor.EmitLdarg(6); // Push tileX
+            cursor.EmitLdarg(7); // Push tileY
+            cursor.EmitLdloca(14); // Push Color*
+            cursor.EmitDelegate((int totalCount, Tile tileCache, int x, int y, ref VertexColors initialColor) =>
+            {
+                for (int i = 0; i < totalCount; i++)
                 {
-                    int totalCount = (int)typeof(Loader).GetProperty("TotalCount", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static).GetValue(LoaderManager.Get<WaterStylesLoader>());
-                    for (int i = 0; i < totalCount; i++)
+                    if (i == Main.waterStyle && tileCache.LiquidType == LiquidID.Water)
                     {
-                        Tile tile = Main.tile[x, y];
-                        if (i == Main.waterStyle && tile.LiquidType == LiquidID.Water)
-                        {
-                            CalamityWaterLoader.DrawColorSetup(x, y, Main.waterStyle, ref initialColor, true);
-                        }
-                        else if ((tile.LiquidType == LiquidID.Lava || i == 1) && CalamityMod.Instance.biomeLava == null)
-                        {
-                            LavaStylesLoader.DrawColorSetup(x, y, CalamityMod.LavaStyle, ref initialColor);
-                        }
+                        CalamityWaterLoader.DrawColorSetup(x, y, Main.waterStyle, ref initialColor, true);
+                    }
+                    else if ((tileCache.LiquidType == LiquidID.Lava || i == 1) && CalamityMod.Instance.biomeLava == null)
+                    {
+                        LavaStylesLoader.DrawColorSetup(x, y, CalamityMod.LavaStyle, ref initialColor);
                     }
                 }
             });
+
+            // And now remaining TotalCount from Dup is now could pass to local variable
+
+            #region Intended Result for Reference
+            // callvirt Loader.TotalCount push 1
+            //
+            // dup      totalCount x2   pop 1 push 2
+            // ldarg    8 (tileCache)   push 1
+            // ldarg    6 (tileX)       push 1
+            // ldarg    7 (tileY)       push 1
+            // ldloca   14 (vertices)   push 1
+            // call     ModdedDelegate  pop 5
+            // 
+            // stloc.s  totalCount      pop 1
+            #endregion
         }
         #endregion
 
