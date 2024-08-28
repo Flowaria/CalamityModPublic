@@ -1244,13 +1244,18 @@ namespace CalamityMod.ILEditing
                 .MakeGenericMethod([typeof(WaterStylesLoader)]);
             if (loaderGetMethod is null)
             {
-                LogFailure("Liquid Slope Draw Colors", "Could not locate the liquid slope vertex colors for drawing");
+                LogFailure("Liquid Slope Draw Colors", "Cannot find \"LoaderManager.Get<WaterStylesLoader>\" Method");
                 return;
             }
 
             var getTotalCountGetter = typeof(Loader)
                 .GetProperty("TotalCount", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static)
                 .GetMethod;
+            if (getTotalCountGetter is null)
+            {
+                LogFailure("Liquid Slope Draw Colors", "Cannot find \"Loader.TotalCount (internal)\" Method");
+                return;
+            }
 
             if (!cursor.TryGotoNext(MoveType.After,
                 c => c.MatchCall(loaderGetMethod),
