@@ -1678,7 +1678,7 @@ namespace CalamityMod.ILEditing
                     Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange, Main.offScreenRange);
                     Vector2 drawPos = new Vector2(tileX * 16, tileY * 16 + 2) - Main.screenPosition + zero;
                     Rectangle drawRect = new Rectangle(xPos, yPos, 16, 16);
-                    Main.spriteBatch.Draw(glowMask.Texture, drawPos, drawRect, drawColor, 0.0f, default, 0.0f, drawData.tileSpriteEffect, 0.0f);
+                    Main.spriteBatch.Draw(glowMask.Texture, drawPos, drawRect, drawColor, 0.0f, default, 1.0f, drawData.tileSpriteEffect, 0.0f);
                 }
             }
         }
