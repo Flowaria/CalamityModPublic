@@ -1114,75 +1114,65 @@ namespace CalamityMod.ILEditing
         private void LiquidEmitLight(On_TileLightScanner.orig_ApplyLiquidLight orig, TileLightScanner self, Tile tile, ref Vector3 lightColor)
         {
             orig.Invoke(self, tile, ref lightColor);
-            if (tile.LiquidAmount > 0 && !tile.HasTile)
+
+            if (tile.LiquidAmount <= 0 || tile.HasTile)
+                return;
+
+            if (tile.LiquidType == LiquidID.Water)
             {
-                if (tile.LiquidType == LiquidID.Water)
-                {
-                    tile.TilePos(out var x, out var y);
+                tile.TilePos(out var x, out var y);
 
-                    float R = 0f;
-                    float G = 0f;
-                    float B = 0f;
-                    CalamityWaterLoader.ModifyLightSetup(x, y, Main.waterStyle, ref R, ref G, ref B);
-                    if (lightColor.X < R)
+                float R = 0f;
+                float G = 0f;
+                float B = 0f;
+                CalamityWaterLoader.ModifyLightSetup(in tile, x, y, Main.waterStyle, ref R, ref G, ref B);
+
+                lightColor.X = Math.Max(lightColor.X, R);
+                lightColor.Y = Math.Max(lightColor.Y, G);
+                lightColor.Z = Math.Max(lightColor.Z, B);
+            }
+            else if (tile.LiquidType == LiquidID.Lava && CalamityMod.Instance.biomeLava == null)
+            {
+                tile.TilePos(out var x, out var y);
+
+                Vector3 lavaLight = new Vector3(0.55f, 0.33f, 0.11f);
+
+                float R = CalamityMod.LavaStyle == 0 ? lavaLight.X : 0f;
+                float G = CalamityMod.LavaStyle == 0 ? lavaLight.Y : 0f;
+                float B = CalamityMod.LavaStyle == 0 ? lavaLight.Z : 0f;
+                LavaStylesLoader.ModifyLightSetup(x, y, CalamityMod.LavaStyle, ref R, ref G, ref B);
+
+                for (int styleIndex = 0; styleIndex < LavaStylesLoader.TotalCount; styleIndex++)
+                {
+                    if (CalamityMod.lavaAlpha[styleIndex] > 0f && styleIndex != CalamityMod.LavaStyle)
                     {
-                        lightColor.X = R;
-                    }
-                    if (lightColor.Y < G)
-                    {
-                        lightColor.Y = G;
-                    }
-                    if (lightColor.Z < B)
-                    {
-                        lightColor.Z = B;
+                        float r = styleIndex == 0 ? lavaLight.X : 0f;
+                        float g = styleIndex == 0 ? lavaLight.Y : 0f;
+                        float b = styleIndex == 0 ? lavaLight.Z : 0f;
+                        LavaStylesLoader.ModifyLightSetup(x, y, styleIndex, ref r, ref g, ref b);
+
+                        float r2 = CalamityMod.LavaStyle == 0 ? lavaLight.X : 0f;
+                        float g2 = CalamityMod.LavaStyle == 0 ? lavaLight.Y : 0f;
+                        float b2 = CalamityMod.LavaStyle == 0 ? lavaLight.Z : 0f;
+                        LavaStylesLoader.ModifyLightSetup(x, y, CalamityMod.LavaStyle, ref r2, ref g2, ref b2);
+
+                        R = float.Lerp(r, r2, CalamityMod.lavaAlpha[CalamityMod.LavaStyle]);
+                        G = float.Lerp(g, g2, CalamityMod.lavaAlpha[CalamityMod.LavaStyle]);
+                        B = float.Lerp(b, b2, CalamityMod.lavaAlpha[CalamityMod.LavaStyle]);
                     }
                 }
-                else if (tile.LiquidType == LiquidID.Lava && CalamityMod.Instance.biomeLava == null)
-                {
-                    tile.TilePos(out var x, out var y);
 
-                    Vector3 lavaLight = new Vector3(0.55f, 0.33f, 0.11f);
-                    float R = CalamityMod.LavaStyle == 0 ? lavaLight.X : 0f;
-                    float G = CalamityMod.LavaStyle == 0 ? lavaLight.Y : 0f;
-                    float B = CalamityMod.LavaStyle == 0 ? lavaLight.Z : 0f;
-                    LavaStylesLoader.ModifyLightSetup(x, y, CalamityMod.LavaStyle, ref R, ref G, ref B);
-                    for (int j = 0; j < LavaStylesLoader.TotalCount; j++)
-                    {
-                        if (CalamityMod.lavaAlpha[j] > 0f && j != CalamityMod.LavaStyle)
-                        {
-                            float r = j == 0 ? lavaLight.X : 0f;
-                            float g = j == 0 ? lavaLight.Y : 0f;
-                            float b = j == 0 ? lavaLight.Z : 0f;
-                            LavaStylesLoader.ModifyLightSetup(x, y, j, ref r, ref g, ref b);
-                            float r2 = CalamityMod.LavaStyle == 0 ? lavaLight.X : 0f;
-                            float g2 = CalamityMod.LavaStyle == 0 ? lavaLight.Y : 0f;
-                            float b2 = CalamityMod.LavaStyle == 0 ? lavaLight.Z : 0f;
-                            LavaStylesLoader.ModifyLightSetup(x, y, CalamityMod.LavaStyle, ref r2, ref g2, ref b2);
-                            R = Single.Lerp(r, r2, CalamityMod.lavaAlpha[CalamityMod.LavaStyle]);
-                            G = Single.Lerp(g, g2, CalamityMod.lavaAlpha[CalamityMod.LavaStyle]);
-                            B = Single.Lerp(b, b2, CalamityMod.lavaAlpha[CalamityMod.LavaStyle]);
-                        }
-                    }
-                    if (!(R == 0 && G == 0 && B == 0))
-                    {
-                        float colorManipulator = (float)(270 - Main.mouseTextColor) / 900f;
-                        R += colorManipulator;
-                        G += colorManipulator;
-                        B += colorManipulator;
-                    }
-                    if (lightColor.X < R)
-                    {
-                        lightColor.X = R;
-                    }
-                    if (lightColor.Y < G)
-                    {
-                        lightColor.Y = G;
-                    }
-                    if (lightColor.Z < B)
-                    {
-                        lightColor.Z = B;
-                    }
+                if (R != 0.0f || G != 0.0f || B != 0.0f)
+                {
+                    float colorManipulator = (float)(270 - Main.mouseTextColor) / 900f;
+                    R += colorManipulator;
+                    G += colorManipulator;
+                    B += colorManipulator;
                 }
+
+                lightColor.X = Math.Max(lightColor.X, R);
+                lightColor.Y = Math.Max(lightColor.Y, G);
+                lightColor.Z = Math.Max(lightColor.Z, B);
             }
         }
 

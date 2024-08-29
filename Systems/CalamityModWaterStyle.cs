@@ -24,12 +24,13 @@ namespace CalamityMod.Systems
         /// It can also let you light up the block in front of this water.<br />
         /// See <see cref="M:Terraria.Graphics.Light.TileLightScanner.ApplyLiquidLight(Terraria.Tile,Microsoft.Xna.Framework.Vector3@)" /> for vanilla tile light values to use as a reference.<br />
         /// </summary>
+        /// <param name="tile">The tile cache of the target tile.</param>
         /// <param name="i">The x position in tile coordinates.</param>
         /// <param name="j">The y position in tile coordinates.</param>
         /// <param name="r">The red component of light, usually a value between 0 and 1</param>
         /// <param name="g">The green component of light, usually a value between 0 and 1</param>
         /// <param name="b">The blue component of light, usually a value between 0 and 1</param>
-        public virtual void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
+        public virtual void ModifyLight(ref readonly Tile tile, int i, int j, ref float r, ref float g, ref float b)
         {
         }
     }
@@ -50,11 +51,11 @@ namespace CalamityMod.Systems
             _Loader = null;
         }
 
-        internal static void ModifyLightSetup(int i, int j, int type, ref float r, ref float g, ref float b)
+        internal static void ModifyLightSetup(ref readonly Tile tile, int i, int j, int type, ref float r, ref float g, ref float b)
         {
             if (_Loader.Get(type) is CalamityModWaterStyle style)
             {
-                style.ModifyLight(i, j, ref r, ref g, ref b);
+                style.ModifyLight(in tile, i, j, ref r, ref g, ref b);
             }
         }
 
