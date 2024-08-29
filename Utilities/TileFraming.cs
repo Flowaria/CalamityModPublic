@@ -53,29 +53,6 @@ namespace CalamityMod
             }
         }
 
-        public static readonly byte[,] Variation4x4_012_Low0 = new byte[4, 4]
-        {
-            { 0, 2, 2, 1 },
-            { 2, 0, 0, 2 },
-            { 1, 2, 1, 0 },
-            { 2, 2, 2, 2 }
-        };
-
-        public static readonly byte[,] Variation4x4_01_Low0 = new byte[4, 4]
-        {
-            { 0, 1, 1, 0 },
-            { 0, 0, 0, 1 },
-            { 1, 1, 0, 0 },
-            { 1, 1, 1, 1 },
-        };
-
-        public static readonly byte[,] Variation3x3_01234_Low3 = new byte[3, 3]
-        {
-            { 0, 2, 4 },
-            { 1, 3, 0 },
-            { 2, 4, 1 }
-        };
-
         private static int[][] PlantCheckAgainst;
         private static Dictionary<ushort, ushort> VineToGrass;
 
@@ -175,27 +152,110 @@ namespace CalamityMod
 
         #region Tile Variation Helpers
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static byte GetVariation4x4_012_Low0(int i, int j)
+        public static int GetVariation4x4_012_Low0(int i, int j)
         {
-            int ii = i & 0b0011;
-            int jj = j & 0b0011;
-            return Variation4x4_012_Low0[ii, jj];
+            int xRel = i & 0b0011;
+            int yRel = j & 0b0011;
+            var output = xRel switch
+            {
+                0 => (yRel switch
+                {
+                    0 => 0,
+                    1 => 2,
+                    2 => 1,
+                    _ => 2
+                }),
+                1 => (yRel switch
+                {
+                    0 => 2,
+                    1 => 0,
+                    2 => 2,
+                    _ => 2
+                }),
+                2 => (yRel switch
+                {
+                    0 => 2,
+                    1 => 0,
+                    2 => 1,
+                    _ => 2
+                }),
+                _ => (yRel switch
+                {
+                    0 => 1,
+                    1 => 2,
+                    2 => 0,
+                    _ => 2
+                }),
+            };
+            return output;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static byte GetVariation4x4_01_Low0(int i, int j)
+        public static int GetVariation4x4_01_Low0(int i, int j)
         {
-            int ii = i & 0b0011;
-            int jj = j & 0b0011;
-            return Variation4x4_01_Low0[ii, jj];
+            int xRel = i & 0b0011;
+            int yRel = j & 0b0011;
+            var output = xRel switch
+            {
+                0 => (yRel switch
+                {
+                    0 => 0,
+                    1 => 0,
+                    2 => 1,
+                    _ => 1
+                }),
+                1 => (yRel switch
+                {
+                    0 => 1,
+                    1 => 0,
+                    2 => 1,
+                    _ => 1
+                }),
+                2 => (yRel switch
+                {
+                    0 => 1,
+                    1 => 0,
+                    2 => 0,
+                    _ => 1
+                }),
+                _ => (yRel switch
+                {
+                    0 => 0,
+                    1 => 1,
+                    2 => 0,
+                    _ => 1
+                }),
+            };
+            return output;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static byte GetVariation3x3_01234_Low3(int i, int j)
+        public static int GetVariation3x3_01234_Low3(int i, int j)
         {
-            int ii = i % 3;
-            int jj = j % 3;
-            return Variation3x3_01234_Low3[ii, jj];
+            int xRel = i % 3;
+            int yRel = j % 3;
+            var output = xRel switch
+            {
+                0 => (yRel switch
+                {
+                    0 => 0,
+                    1 => 1,
+                    _ => 2
+                }),
+                1 => (yRel switch
+                {
+                    0 => 2,
+                    1 => 3,
+                    _ => 4
+                }),
+                _ => (yRel switch
+                {
+                    0 => 4,
+                    1 => 0,
+                    _ => 1
+                }),
+            };
+            return output;
         }
         #endregion
 
