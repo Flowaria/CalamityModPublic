@@ -25,11 +25,13 @@ namespace CalamityMod
                 return;
 
             var texture = ModContent.Request<Texture2D>(assetName, AssetRequestMode.ImmediateLoad).Value;
-            _Scales = new float[texture.Width];
+            if (texture is null)
+                return;
 
             Main.QueueMainThreadAction(() =>
             {
                 _Width = texture.Width;
+                _Scales = new float[texture.Width];
 
                 var colorScheme = new Color[_Width];
                 texture.GetData(colorScheme);
