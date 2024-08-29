@@ -1648,15 +1648,22 @@ namespace CalamityMod.ILEditing
                 int colType = tileCache.TileColor;
 
                 Color drawColor = glowMaskTile.GetGlowMaskColor(tileX, tileY, drawData);
-                drawColor.R = Math.Max(drawData.tileLight.R, drawColor.R);
-                drawColor.G = Math.Max(drawData.tileLight.G, drawColor.G);
-                drawColor.B = Math.Max(drawData.tileLight.B, drawColor.B);
+                Color tileLight = drawData.tileLight;
+
+                if (tileLight.R > drawColor.R) drawColor.R = tileLight.R;
+                if (tileLight.G > drawColor.G) drawColor.G = tileLight.G;
+                if (tileLight.B > drawColor.B) drawColor.B = tileLight.B;
+
                 drawColor = glowMaskTile.ColorTint switch
                 {
                     GlowMaskTile.PaintColorTint.OnlyByDeepPaint => GlowMaskTile.ApplyPaint(colType, drawColor, deepPaintOnly: true),
                     GlowMaskTile.PaintColorTint.ByEveryPaint => GlowMaskTile.ApplyPaint(colType, drawColor, deepPaintOnly: false),
                     _ => drawColor
                 };
+
+                // Cull no lit and pure black colors
+                if (drawColor.R <= 0 && drawColor.G <= 0 && drawColor.B <= 0)
+                    return;
 
                 drawColor.A = 255;
 

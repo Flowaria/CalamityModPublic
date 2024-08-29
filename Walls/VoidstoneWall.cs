@@ -55,7 +55,9 @@ namespace CalamityMod.Walls
                 zero = Vector2.Zero;
 
             Vector2 pos = new Vector2(i * 16 - (int)Main.screenPosition.X, j * 16 - (int)Main.screenPosition.Y) + zero;
-            spriteBatch.Draw(TextureAssets.Wall[wallType].Value, pos + new Vector2(-8 + xOff, -8), frame, Lighting.GetColor(i, j, Color.White), 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+            Color lightColor = Lighting.GetColor(i, j, Color.White);
+
+            spriteBatch.Draw(TextureAssets.Wall[wallType].Value, pos + new Vector2(-8 + xOff, -8), frame, lightColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
 
             if (GlowMask.HasContentInFramePos(xPos, yPos))
             {
@@ -67,6 +69,13 @@ namespace CalamityMod.Walls
                 brightness *= (float)MathF.Sin(j * 18f + declareThisHereToPreventRunningTheSameCalculationMultipleTimes);
                 drawcolor *= brightness;
                 Color glowColor = drawcolor * 0.4f;
+
+                if (glowColor.R > glowColor.R) glowColor.R = lightColor.R;
+                if (glowColor.G > glowColor.G) glowColor.G = lightColor.G;
+                if (glowColor.B > glowColor.B) glowColor.B = lightColor.B;
+
+                if (glowColor.R <= 0 && glowColor.G <= 0 && glowColor.B <= 0)
+                    return;
 
                 for (int k = 0; k < 3; k++)
                 {
