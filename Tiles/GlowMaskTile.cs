@@ -20,7 +20,7 @@ namespace CalamityMod.Tiles
             None,
         }
 
-        public FramedGlowMask GlowMask;
+        public FramedMaskTexture GlowMask;
 
         internal static GlowMaskTile[] InstanceLookup; // This Lookup is Array for performances sake
 

@@ -11,7 +11,7 @@ namespace CalamityMod.Walls
 {
     public class VoidstoneWall : ModWall
     {
-        internal static FramedGlowMask GlowMask;
+        internal static FramedMaskTexture GlowMask;
 
         public override void SetStaticDefaults()
         {

@@ -11,7 +11,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod
 {
-    public sealed class FramedGlowMask
+    public sealed class FramedMaskTexture
     {
         /// <summary>
         /// Cached Texture2D reference, null on server
@@ -51,9 +51,9 @@ namespace CalamityMod
         private int _FrameWidth = 0, _FrameHeight = 0;
         private int _FrameXCount = 0, _FrameYCount = 0;
         private int _TextureWidth = 0, _TextureHeight = 0;
-        private readonly bool[,] _HasGlowContent;
+        private readonly bool[] _HasMaskContent;
 
-        public FramedGlowMask(string asset, int frameWidth, int frameHeight, bool pretendEveryFrameHaveGlow = false)
+        public FramedMaskTexture(string asset, int frameWidth, int frameHeight, bool pretendEveryFrameHaveGlow = false)
         {
             _FrameWidth = frameWidth;
             _FrameHeight = frameHeight;
@@ -73,7 +73,7 @@ namespace CalamityMod
             _FrameXCount = _TextureWidth / frameWidth;
             _FrameYCount = _TextureHeight / frameHeight;
 
-            _HasGlowContent = new bool[FrameXCount, FrameYCount];
+            _HasMaskContent = new bool[FrameXCount * FrameYCount];
 
             
             if (pretendEveryFrameHaveGlow)
@@ -82,7 +82,7 @@ namespace CalamityMod
                 {
                     for (int y = 0; y<FrameYCount; y++)
                     {
-                        _HasGlowContent[x, y] = true;
+                        _HasMaskContent[x + (y * _FrameXCount)] = true;
                     }
                 }
             }
@@ -126,7 +126,7 @@ namespace CalamityMod
                             }
                         }
 
-                        _HasGlowContent[xFrame, yFrame] = frameHasData;
+                        _HasMaskContent[xFrame + (yFrame * _FrameXCount)] = frameHasData;
                     });
                 });
             }
@@ -152,7 +152,7 @@ namespace CalamityMod
             if (yFrame < 0 || yFrame >= _FrameYCount)
                 return false;
 
-            return _HasGlowContent[xFrame, yFrame];
+            return _HasMaskContent[xFrame + (yFrame * _FrameXCount)];
         }
 
         public bool HasContentInFramePos(int xPos, int yPos)
@@ -169,7 +169,7 @@ namespace CalamityMod
             if (yFrame < 0 || yFrame >= _FrameYCount)
                 return false;
 
-            return _HasGlowContent[xFrame, yFrame];
+            return _HasMaskContent[xFrame + (yFrame * _FrameXCount)];
         }
 
         private sealed class FramedGlowMaskSystem : ModSystem
