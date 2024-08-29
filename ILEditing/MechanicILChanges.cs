@@ -1111,72 +1111,80 @@ namespace CalamityMod.ILEditing
 
         #region Liquid Visuals
         //Contains all liquid light and liquid alpha (seethrough-ability)
-        private void LiquidEmitLight(On_TileLightScanner.orig_ApplyLiquidLight orig, TileLightScanner self, Tile tile, ref Vector3 lightColor)
+        private static void ApplyLiquidEmit(ILContext il)
         {
-            orig.Invoke(self, tile, ref lightColor);
-
-            if (tile.LiquidAmount <= 0 || tile.HasTile)
+            ILCursor cursor = new ILCursor(il);
+            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchRet()))
+            {
+                LogFailure("Liquid Light Emit", "ret instruction is missing????? how is this even possible?????");
                 return;
-
-            if (tile.LiquidType == LiquidID.Water)
-            {
-                tile.TilePos(out var x, out var y);
-
-                float R = 0f;
-                float G = 0f;
-                float B = 0f;
-                CalamityWaterLoader.ModifyLightSetup(in tile, x, y, Main.waterStyle, ref R, ref G, ref B);
-
-                lightColor.X = Math.Max(lightColor.X, R);
-                lightColor.Y = Math.Max(lightColor.Y, G);
-                lightColor.Z = Math.Max(lightColor.Z, B);
             }
-            else if (tile.LiquidType == LiquidID.Lava && CalamityMod.Instance.biomeLava == null)
+
+            cursor.EmitLdloc0(); // This should be tile
+            cursor.EmitLdarg1(); // x
+            cursor.EmitLdarg2(); // y
+            cursor.EmitLdarg3(); // ref OutputColor
+            cursor.EmitDelegate((Tile tile, int x, int y, ref Vector3 lightColor) =>
             {
-                tile.TilePos(out var x, out var y);
+                if (tile.HasTile || tile.LiquidAmount <= 0)
+                    return;
 
-                Vector3 lavaLight = new Vector3(0.55f, 0.33f, 0.11f);
-
-                float R = CalamityMod.LavaStyle == 0 ? lavaLight.X : 0f;
-                float G = CalamityMod.LavaStyle == 0 ? lavaLight.Y : 0f;
-                float B = CalamityMod.LavaStyle == 0 ? lavaLight.Z : 0f;
-                LavaStylesLoader.ModifyLightSetup(x, y, CalamityMod.LavaStyle, ref R, ref G, ref B);
-
-                for (int styleIndex = 0; styleIndex < LavaStylesLoader.TotalCount; styleIndex++)
+                if (tile.LiquidType == LiquidID.Water)
                 {
-                    if (CalamityMod.lavaAlpha[styleIndex] > 0f && styleIndex != CalamityMod.LavaStyle)
+                    float R = 0f;
+                    float G = 0f;
+                    float B = 0f;
+                    CalamityWaterLoader.ModifyLightSetup(in tile, x, y, Main.waterStyle, ref R, ref G, ref B);
+
+                    lightColor.X = Math.Max(lightColor.X, R);
+                    lightColor.Y = Math.Max(lightColor.Y, G);
+                    lightColor.Z = Math.Max(lightColor.Z, B);
+                }
+                else if (tile.LiquidType == LiquidID.Lava && CalamityMod.Instance.biomeLava == null)
+                {
+                    Vector3 lavaLight = new Vector3(0.55f, 0.33f, 0.11f);
+
+                    float R = CalamityMod.LavaStyle == 0 ? lavaLight.X : 0f;
+                    float G = CalamityMod.LavaStyle == 0 ? lavaLight.Y : 0f;
+                    float B = CalamityMod.LavaStyle == 0 ? lavaLight.Z : 0f;
+                    LavaStylesLoader.ModifyLightSetup(x, y, CalamityMod.LavaStyle, ref R, ref G, ref B);
+
+                    for (int styleIndex = 0; styleIndex < LavaStylesLoader.TotalCount; styleIndex++)
                     {
-                        float r = styleIndex == 0 ? lavaLight.X : 0f;
-                        float g = styleIndex == 0 ? lavaLight.Y : 0f;
-                        float b = styleIndex == 0 ? lavaLight.Z : 0f;
-                        LavaStylesLoader.ModifyLightSetup(x, y, styleIndex, ref r, ref g, ref b);
+                        if (CalamityMod.lavaAlpha[styleIndex] > 0f && styleIndex != CalamityMod.LavaStyle)
+                        {
+                            float r = styleIndex == 0 ? lavaLight.X : 0f;
+                            float g = styleIndex == 0 ? lavaLight.Y : 0f;
+                            float b = styleIndex == 0 ? lavaLight.Z : 0f;
+                            LavaStylesLoader.ModifyLightSetup(x, y, styleIndex, ref r, ref g, ref b);
 
-                        float r2 = CalamityMod.LavaStyle == 0 ? lavaLight.X : 0f;
-                        float g2 = CalamityMod.LavaStyle == 0 ? lavaLight.Y : 0f;
-                        float b2 = CalamityMod.LavaStyle == 0 ? lavaLight.Z : 0f;
-                        LavaStylesLoader.ModifyLightSetup(x, y, CalamityMod.LavaStyle, ref r2, ref g2, ref b2);
+                            float r2 = CalamityMod.LavaStyle == 0 ? lavaLight.X : 0f;
+                            float g2 = CalamityMod.LavaStyle == 0 ? lavaLight.Y : 0f;
+                            float b2 = CalamityMod.LavaStyle == 0 ? lavaLight.Z : 0f;
+                            LavaStylesLoader.ModifyLightSetup(x, y, CalamityMod.LavaStyle, ref r2, ref g2, ref b2);
 
-                        R = float.Lerp(r, r2, CalamityMod.lavaAlpha[CalamityMod.LavaStyle]);
-                        G = float.Lerp(g, g2, CalamityMod.lavaAlpha[CalamityMod.LavaStyle]);
-                        B = float.Lerp(b, b2, CalamityMod.lavaAlpha[CalamityMod.LavaStyle]);
+                            R = float.Lerp(r, r2, CalamityMod.lavaAlpha[CalamityMod.LavaStyle]);
+                            G = float.Lerp(g, g2, CalamityMod.lavaAlpha[CalamityMod.LavaStyle]);
+                            B = float.Lerp(b, b2, CalamityMod.lavaAlpha[CalamityMod.LavaStyle]);
+                        }
                     }
-                }
 
-                if (R != 0.0f || G != 0.0f || B != 0.0f)
-                {
-                    float colorManipulator = (float)(270 - Main.mouseTextColor) / 900f;
-                    R += colorManipulator;
-                    G += colorManipulator;
-                    B += colorManipulator;
-                }
+                    if (R != 0.0f || G != 0.0f || B != 0.0f)
+                    {
+                        float colorManipulator = (float)(270 - Main.mouseTextColor) / 900f;
+                        R += colorManipulator;
+                        G += colorManipulator;
+                        B += colorManipulator;
+                    }
 
-                lightColor.X = Math.Max(lightColor.X, R);
-                lightColor.Y = Math.Max(lightColor.Y, G);
-                lightColor.Z = Math.Max(lightColor.Z, B);
-            }
+                    lightColor.X = Math.Max(lightColor.X, R);
+                    lightColor.Y = Math.Max(lightColor.Y, G);
+                    lightColor.Z = Math.Max(lightColor.Z, B);
+                }
+            });
         }
 
-        private void LavafallLightEditor(On_WaterfallManager.orig_AddLight orig, int waterfallType, int x, int y)
+        private static void LavafallLightEditor(On_WaterfallManager.orig_AddLight orig, int waterfallType, int x, int y)
         {
             if (waterfallType == 1)
             {

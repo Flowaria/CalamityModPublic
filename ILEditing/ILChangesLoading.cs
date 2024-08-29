@@ -118,7 +118,7 @@ namespace CalamityMod.ILEditing
             }
 
             // Liquid Lighting and alpha (Liquid Viusuals)
-            On_TileLightScanner.ApplyLiquidLight += LiquidEmitLight;
+            IL_TileLightScanner.GetTileLight += ApplyLiquidEmit;
             IL_LiquidRenderer.DrawNormalLiquids += LiquidDrawColors; //Liquid Light
             IL_TileDrawing.DrawTile_LiquidBehindTile += LiquidSlopeDrawColors;
 
