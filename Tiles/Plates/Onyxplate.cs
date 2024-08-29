@@ -39,10 +39,9 @@ namespace CalamityMod.Tiles.Plates
 
         public override Color GetGlowMaskColor(int i, int j, TileDrawInfo drawData)
         {
-            int factor = (int)Main.GameUpdateCount;
-            float brightness = PulseGradient.GetColorRepeat(factor).R / 255f;
-            int drawBrightness = (int)(80 * brightness) + 10;
-            return Color.White * drawBrightness;
+            float brightness = PulseGradient.GetColorRepeat((int)Main.GameUpdateCount).R / 255f;
+            brightness = 0.04f + (brightness * 0.31f);
+            return Color.White * brightness;
         }
     }
 }
