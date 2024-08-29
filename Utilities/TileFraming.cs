@@ -151,7 +151,6 @@ namespace CalamityMod
         #endregion
 
         #region Tile Variation Helpers
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int GetVariation4x4_012_Low0(int i, int j)
         {
             int xRel = i & 0b0011;
@@ -190,7 +189,6 @@ namespace CalamityMod
             return output;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int GetVariation4x4_01_Low0(int i, int j)
         {
             int xRel = i & 0b0011;
@@ -229,7 +227,6 @@ namespace CalamityMod
             return output;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int GetVariation3x3_01234_Low3(int i, int j)
         {
             int xRel = i % 3;
