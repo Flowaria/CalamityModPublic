@@ -4,26 +4,23 @@ using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.Plates
 {
-    public class Elumplate : ModTile
+    public class Elumplate : GlowMaskTile
     {
+        public override string GlowMaskAsset => "CalamityMod/Tiles/Plates/ElumplateGlow";
+
         public static readonly SoundStyle MinePlatingSound = new("CalamityMod/Sounds/Custom/PlatingMine", 3);
-        internal static Texture2D GlowTexture;
-        internal static Texture2D PulseTexture;
-        internal static Color[] PulseColors;
-        public override void SetStaticDefaults()
+        internal static GradientTexture PulseGradient;
+
+        public override void SetupStatic()
         {
-            if (!Main.dedServ)
-            {
-                PulseTexture = ModContent.Request<Texture2D>("CalamityMod/Tiles/Plates/ElumplatePulse", AssetRequestMode.ImmediateLoad).Value;
-                PulseColors = new Color[PulseTexture.Width];
-                Main.QueueMainThreadAction(() => PulseTexture.GetData(PulseColors));
-                GlowTexture = ModContent.Request<Texture2D>("CalamityMod/Tiles/Plates/ElumplateGlow", AssetRequestMode.ImmediateLoad).Value;
-            }
+            PulseGradient = new("CalamityMod/Tiles/Plates/ElumplatePulse");
+
             Main.tileSolid[Type] = true;
             Main.tileMergeDirt[Type] = true;
             Main.tileBlockLight[Type] = true;
@@ -34,6 +31,12 @@ namespace CalamityMod.Tiles.Plates
             MineResist = 1f;
             AddMapEntry(new Color(121, 180, 212));
         }
+        public override void OnUnload()
+        {
+            PulseGradient?.Unload();
+            PulseGradient = null;
+        }
+
 
         public override bool CreateDust(int i, int j, ref int type)
         {
@@ -47,37 +50,12 @@ namespace CalamityMod.Tiles.Plates
             Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.PlatinumCoin, 0f, 0f, 1, new Color(255, 255, 255), 1f);
         }
 
-        public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
+        public override Color GetGlowMaskColor(int i, int j, TileDrawInfo drawData)
         {
-            // If the cached textures don't exist for some reason, don't bother using them.
-            if (GlowTexture is null || PulseTexture is null)
-                return;
-
-            var tileCache = Main.tile[i, j];
-
-            // Glowmask 'pulse' effect
-            int factor = (int)Main.GameUpdateCount % PulseTexture.Width;
-            float brightness = PulseColors[factor].R / 255f;
+            int factor = (int)Main.GameUpdateCount;
+            float brightness = PulseGradient.GetColorRepeat(factor).R / 255f;
             int drawBrightness = (int)(40 * brightness) + 10;
-            Color drawColour = GetDrawColour(i, j, new Color(drawBrightness, drawBrightness, drawBrightness, drawBrightness));
-
-            // If these tiles cause lag, comment out the pulse effect code and uncomment this:
-            //Color drawColour = GetDrawColour(i, j, new Color(50, 50, 50, 50));
-
-            TileFraming.SlopedGlowmask(in tileCache, i, j, GlowTexture, null, GetDrawColour(i, j, drawColour), default);
-        }
-
-        private Color GetDrawColour(int i, int j, Color colour)
-        {
-            int colType = Main.tile[i, j].TileColor;
-            Color paintCol = WorldGen.paintColor(colType);
-            if (colType >= PaintID.DeepRedPaint && colType <= PaintID.DeepPinkPaint)
-            {
-                colour.R = (byte)(paintCol.R / 255f * colour.R);
-                colour.G = (byte)(paintCol.G / 255f * colour.G);
-                colour.B = (byte)(paintCol.B / 255f * colour.B);
-            }
-            return colour;
+            return Color.White * drawBrightness;
         }
     }
 }
