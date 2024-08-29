@@ -17,7 +17,7 @@ namespace CalamityMod.Tiles.Plates
 
         public static readonly SoundStyle MinePlatingSound = new("CalamityMod/Sounds/Custom/PlatingMine", 3);
 
-        internal static GradientTexture PulseGradient;
+        internal static GrayscaleTexture1D PulseGradient;
 
         public override void SetupStatic()
         {
@@ -54,7 +54,7 @@ namespace CalamityMod.Tiles.Plates
 
         public override Color GetGlowMaskColor(int i, int j, TileDrawInfo drawData)
         {
-            float brightness = PulseGradient.GetColorRepeat((int)Main.GameUpdateCount).R / 255f;
+            float brightness = PulseGradient.GetRepeat((int)Main.GameUpdateCount);
             brightness = 0.04f + (brightness * 0.156f);
             return Color.White * brightness;
         }

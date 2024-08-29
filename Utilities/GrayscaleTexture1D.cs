@@ -12,50 +12,56 @@ using Microsoft.Xna.Framework;
 namespace CalamityMod
 {
     /// <summary>
-    /// Utility Class for using Gradient Texture (X-axis)
+    /// Utility Class for using 1D Grayscale Texture as gradient
     /// </summary>
-    public sealed class GradientTexture
+    public sealed class GrayscaleTexture1D
     {
         private int _Width = 0;
-        private Color[] _ColorCache;
+        private float[] _Scales;
 
-        public GradientTexture(string assetName)
+        public GrayscaleTexture1D(string assetName)
         {
             if (Main.dedServ)
                 return;
 
             var texture = ModContent.Request<Texture2D>(assetName, AssetRequestMode.ImmediateLoad).Value;
-            _ColorCache = new Color[texture.Width];
+            _Scales = new float[texture.Width];
 
             Main.QueueMainThreadAction(() =>
             {
-                texture.GetData(_ColorCache);
                 _Width = texture.Width;
+
+                var colorScheme = new Color[_Width];
+                texture.GetData(colorScheme);
+                for (int i = 0; i<_Width; i++)
+                {
+                    _Scales[i] = colorScheme[i].R / 255.0f;
+                }
             });
         }
 
         public void Unload()
         {
             _Width = 0;
-            _ColorCache = null;
+            _Scales = null;
         }
 
-        public Color GetColorClamped(int x)
+        public float GetClamp(int x)
         {
             if (_Width == 0)
                 return default;
 
             x = Math.Clamp(x, 0, _Width - 1);
-            return _ColorCache[x];
+            return _Scales[x];
         }
 
-        public Color GetColorRepeat(int x)
+        public float GetRepeat(int x)
         {
             if (_Width == 0)
                 return default;
 
             x %= _Width;
-            return _ColorCache[x];
+            return _Scales[x];
         }
     }
 }
