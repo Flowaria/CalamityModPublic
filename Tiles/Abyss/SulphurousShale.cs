@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using CalamityMod.Tiles.Abyss.AbyssAmbient;
+using CalamityMod.Waters;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -19,12 +20,8 @@ namespace CalamityMod.Tiles.Abyss
 
         public static readonly SoundStyle MineSound = new("CalamityMod/Sounds/Custom/AbyssGravelMine", 3);
 
-        private int SulphuricDepthsWaterStyle;
-
         public override void SetStaticDefaults()
         {
-            SulphuricDepthsWaterStyle = ModContent.Find<ModWaterStyle>("CalamityMod/SulphuricDepthsWater").Slot;
-
             Main.tileSolid[Type] = true;
             Main.tileBlockLight[Type] = true;
             Main.tileMergeDirt[Type] = true;
@@ -44,9 +41,12 @@ namespace CalamityMod.Tiles.Abyss
 
         public override void NearbyEffects(int i, int j, bool closer)
         {
+            if (Main.dedServ)
+                return;
+
             if (Main.LocalPlayer.InModBiome(ModContent.GetInstance<BiomeManagers.AbyssLayer1Biome>()))
             {
-                Main.SceneMetrics.ActiveFountainColor = SulphuricDepthsWaterStyle;
+                Main.SceneMetrics.ActiveFountainColor = SulphuricDepthsWater.Instance.Slot;
             }
         }
 
