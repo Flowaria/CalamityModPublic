@@ -16,6 +16,9 @@ namespace CalamityMod.Backgrounds
 
         public override void SetStaticDefaults()
         {
+            if (Main.dedServ)
+                return;
+
             AUBG0 = BackgroundTextureLoader.GetBackgroundSlot("CalamityMod/Backgrounds/AstralUG0");
             AUBG1 = BackgroundTextureLoader.GetBackgroundSlot("CalamityMod/Backgrounds/AstralUG1");
             AUBG2 = BackgroundTextureLoader.GetBackgroundSlot("CalamityMod/Backgrounds/AstralUG2");

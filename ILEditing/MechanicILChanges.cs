@@ -1280,24 +1280,22 @@ namespace CalamityMod.ILEditing
 
             // Starts from callvirt (ret: int)
             // Stack now have TotalCount and about to pop by local variable, so:
-            cursor.EmitDup(); // Duplicate TotalCount and Push to Stack
             cursor.EmitLdarg(8); // Push tileCache
             cursor.EmitLdarg(6); // Push tileX
             cursor.EmitLdarg(7); // Push tileY
             cursor.EmitLdloca(14); // Push Color*
-            cursor.EmitDelegate((int totalCount, Tile tileCache, int x, int y, ref VertexColors initialColor) =>
+            cursor.EmitDelegate((Tile tileCache, int x, int y, ref VertexColors initialColor) =>
             {
-                for (int i = 0; i < totalCount; i++)
-                {
-                    if (i == Main.waterStyle && tileCache.LiquidType == LiquidID.Water)
-                    {
-                        CalamityWaterLoader.DrawColorSetup(x, y, Main.waterStyle, ref initialColor, true);
-                    }
-                    else if ((tileCache.LiquidType == LiquidID.Lava || i == 1) && CalamityMod.Instance.biomeLava == null)
-                    {
-                        LavaStylesLoader.DrawColorSetup(x, y, CalamityMod.LavaStyle, ref initialColor);
-                    }
-                }
+                // TODO: Properly handle Transition between styles
+                // That will require extra il injection to achieve
+                if (tileCache.LiquidType == LiquidID.Water)
+                    CalamityWaterLoader.DrawColorSetup(x, y, Main.waterStyle, ref initialColor, true);
+
+                // Known Issue: Sloped Lava Rendering actually does not work on here! (It's been a case even before edited in 2024/08/30)
+                // Reason: Flag6 is "IsWater" flag, and since we don't modified that behaviour "yet" it will never be triggered here
+                // Fix this when there will be new lava style with dynamic color changes
+                else if (tileCache.LiquidType == LiquidID.Lava)
+                    LavaStylesLoader.DrawColorSetup(x, y, CalamityMod.LavaStyle, ref initialColor);
             });
 
             // And now remaining TotalCount from Dup is now could pass to local variable
@@ -1305,12 +1303,11 @@ namespace CalamityMod.ILEditing
             #region Intended Result for Reference
             // callvirt Loader.TotalCount push 1
             //
-            // dup      totalCount x2   pop 1 push 2
             // ldarg    8 (tileCache)   push 1
             // ldarg    6 (tileX)       push 1
             // ldarg    7 (tileY)       push 1
             // ldloca   14 (vertices)   push 1
-            // call     ModdedDelegate  pop 5
+            // call     ModdedDelegate  pop 4
             // 
             // stloc.s  totalCount      pop 1
             #endregion

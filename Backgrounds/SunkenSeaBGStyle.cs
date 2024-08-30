@@ -1,4 +1,5 @@
-﻿using Terraria.ModLoader;
+﻿using Terraria;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Backgrounds
 {
@@ -11,6 +12,9 @@ namespace CalamityMod.Backgrounds
 
         public override void SetStaticDefaults()
         {
+            if (Main.dedServ)
+                return;
+
             SSBG0 = BackgroundTextureLoader.GetBackgroundSlot("CalamityMod/Backgrounds/SunkenSeaBG0");
             SSBG1 = BackgroundTextureLoader.GetBackgroundSlot("CalamityMod/Backgrounds/SunkenSeaBG1");
             SSBG2 = BackgroundTextureLoader.GetBackgroundSlot("CalamityMod/Backgrounds/SunkenSeaBG2");
