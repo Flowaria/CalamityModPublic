@@ -784,7 +784,7 @@ namespace CalamityMod.ILEditing
         //BiomeLava is a check for whether they load or not. If BiomeLava is active all ModLavaStyles will be turned into ModCalls for BiomeLava.
 
         #region Lava Rendering
-        private void DoDrawLavas(ILContext il)
+        private static void DoDrawLavas(ILContext il)
         {
             ILCursor cursor = new ILCursor(il);
             if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdsfld<Main>("drawToScreen"), i => i.MatchBrfalse(out _), i => i.MatchLdarg0(), i => i.MatchLdcI4(1), i => i.MatchCall<Main>("DrawWaters")))
@@ -805,7 +805,7 @@ namespace CalamityMod.ILEditing
             });
         }
 
-        private void RenderLavas(ILContext il)
+        private static void RenderLavas(ILContext il)
         {
             ILCursor cursor = new ILCursor(il);
             if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdarg0(), i => i.MatchLdcI4(0), i => i.MatchCall<Main>("DrawWaters")))
@@ -818,7 +818,7 @@ namespace CalamityMod.ILEditing
             });
         }
 
-        private void RenderLavaBackgrounds(ILContext il)
+        private static void RenderLavaBackgrounds(ILContext il)
         {
             ILCursor cursor = new ILCursor(il);
             if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdarg0(), i => i.MatchLdcI4(1), i => i.MatchCall<Main>("DrawWaters")))
@@ -831,7 +831,7 @@ namespace CalamityMod.ILEditing
             });
         }
 
-        private void DrawLavatoCapture(ILContext il)
+        private static void DrawLavatoCapture(ILContext il)
         {
             ILCursor cursor = new ILCursor(il);
             if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdsfld<Main>("liquidAlpha"), i => i.MatchCall(out _), i => i.MatchStloc2()))
@@ -909,7 +909,7 @@ namespace CalamityMod.ILEditing
             cursor.EmitLdloc(12);
             cursor.EmitLdloc(13);
             cursor.EmitLdloc(14);
-            cursor.EmitDelegate((Microsoft.Xna.Framework.Vector2 unscaledPosition, Microsoft.Xna.Framework.Vector2 vector, int j, int i, Terraria.Tile tile) => {
+            cursor.EmitDelegate((Vector2 unscaledPosition, Vector2 vector, int j, int i, Tile tile) => {
                 LavaRendering.instance.DrawTile_LiquidBehindTile(solidLayer: false, inFrontOfPlayers: false, -1, unscaledPosition, vector, j, i, tile);
             });
         }
@@ -966,14 +966,25 @@ namespace CalamityMod.ILEditing
 
         private void BlockLavaDrawingForSlopes(On_TileDrawing.orig_DrawTile_LiquidBehindTile orig, TileDrawing self, bool solidLayer, bool inFrontOfPlayers, int waterStyleOverride, Vector2 screenPosition, Vector2 screenOffset, int tileX, int tileY, Tile tileCache)
         {
-            Tile tile = Main.tile[tileX + 1, tileY];
-            Tile tile2 = Main.tile[tileX - 1, tileY];
-            Tile tile3 = Main.tile[tileX, tileY - 1];
-            Tile tile4 = Main.tile[tileX, tileY + 1];
-            if (tileCache.LiquidType == LiquidID.Lava || tile.LiquidType == LiquidID.Lava || tile2.LiquidType == LiquidID.Lava || tile3.LiquidType == LiquidID.Lava || tile4.LiquidType == LiquidID.Lava)
-            {
+            if (tileCache.LiquidType == LiquidID.Lava)
                 return;
-            }
+
+            Tile tile = Main.tile[tileX + 1, tileY];
+            if (tile.LiquidType == LiquidID.Lava)
+                return;
+
+            Tile tile2 = Main.tile[tileX - 1, tileY];
+            if (tile2.LiquidType == LiquidID.Lava)
+                return;
+
+            Tile tile3 = Main.tile[tileX, tileY - 1];
+            if (tile3.LiquidType == LiquidID.Lava)
+                return;
+
+            Tile tile4 = Main.tile[tileX, tileY + 1];
+            if (tile4.LiquidType == LiquidID.Lava)
+                return;
+
             orig.Invoke(self, solidLayer, inFrontOfPlayers, waterStyleOverride, screenPosition, screenOffset, tileX, tileY, tileCache);
         }
 
@@ -1422,7 +1433,7 @@ namespace CalamityMod.ILEditing
                 ForegroundManager.DrawTiles();
         }
 
-        private static void ClearForegroundStuff(Terraria.GameContent.Drawing.On_TileDrawing.orig_PreDrawTiles orig, Terraria.GameContent.Drawing.TileDrawing self, bool solidLayer, bool forRenderTargets, bool intoRenderTargets)
+        private static void ClearForegroundStuff(On_TileDrawing.orig_PreDrawTiles orig, TileDrawing self, bool solidLayer, bool forRenderTargets, bool intoRenderTargets)
         {
             orig(self, solidLayer, forRenderTargets, intoRenderTargets);
 
@@ -1432,7 +1443,7 @@ namespace CalamityMod.ILEditing
         #endregion
 
         #region Tile ping overlay
-        private static void ClearTilePings(Terraria.GameContent.Drawing.On_TileDrawing.orig_Draw orig, Terraria.GameContent.Drawing.TileDrawing self, bool solidLayer, bool forRenderTargets, bool intoRenderTargets, int waterStyleOverride)
+        private static void ClearTilePings(On_TileDrawing.orig_Draw orig, TileDrawing self, bool solidLayer, bool forRenderTargets, bool intoRenderTargets, int waterStyleOverride)
         {
             //Retro & Trippy light modes are fine. Just reset the cache before every time stuff gets drawn.
             if (Lighting.UpdateEveryFrame)
@@ -1637,7 +1648,7 @@ namespace CalamityMod.ILEditing
             orig(self, drawData, solidLayer, waterStyleOverride, screenPosition, screenOffset, tileX, tileY);
 
             var type = drawData.typeCache;
-            if (type < 0 || type >= TileLoader.TileCount)
+            if (type < 0 || type >= GlowMaskTile.LookupLength)
                 return;
 
             var glowMaskTile = GlowMaskTile.InstanceLookup[type];
@@ -1645,14 +1656,11 @@ namespace CalamityMod.ILEditing
                 return;
 
             var glowMask = glowMaskTile.GlowMask;
-            if (glowMask is null)
-                return;
-
             int xPos = drawData.tileFrameX + drawData.addFrX;
             int yPos = drawData.tileFrameY + drawData.addFrY;
             if (glowMask.HasContentInFramePos(xPos, yPos))
             {
-                var tileCache = drawData.tileCache;
+                ref Tile tileCache = ref drawData.tileCache;
                 int colType = tileCache.TileColor;
 
                 Color drawColor = glowMaskTile.GetGlowMaskColor(tileX, tileY, drawData);
@@ -1662,15 +1670,15 @@ namespace CalamityMod.ILEditing
                 if (tileLight.G > drawColor.G) drawColor.G = tileLight.G;
                 if (tileLight.B > drawColor.B) drawColor.B = tileLight.B;
 
-                drawColor = glowMaskTile.ColorTint switch
+                drawColor = glowMaskTile.GlowMaskPaintInteraction switch
                 {
                     GlowMaskTile.PaintColorTint.OnlyByDeepPaint => GlowMaskTile.ApplyPaint(colType, drawColor, deepPaintOnly: true),
                     GlowMaskTile.PaintColorTint.ByEveryPaint => GlowMaskTile.ApplyPaint(colType, drawColor, deepPaintOnly: false),
                     _ => drawColor
                 };
 
-                // Cull no lit and pure black colors
-                if (drawColor.R <= 0 && drawColor.G <= 0 && drawColor.B <= 0)
+                // Cull no lit and too dark colors
+                if (drawColor.R <= 1 && drawColor.G <= 1 && drawColor.B <= 1)
                     return;
 
                 drawColor.A = 255;
@@ -1682,7 +1690,6 @@ namespace CalamityMod.ILEditing
                 }
                 else
                 {
-                   
                     Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange, Main.offScreenRange);
                     Vector2 drawPos = new Vector2(tileX * 16, tileY * 16 + 2) - Main.screenPosition + zero;
                     Rectangle drawRect = new Rectangle(xPos, yPos, 16, 16);

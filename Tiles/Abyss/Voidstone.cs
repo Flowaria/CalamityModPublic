@@ -17,9 +17,12 @@ namespace CalamityMod.Tiles.Abyss
         public static readonly SoundStyle MineSound = new("CalamityMod/Sounds/Custom/VoidstoneMine", 3) { Volume = 0.4f };
 
         public override string GlowMaskAsset => "CalamityMod/Tiles/Abyss/Voidstone_Glowmask";
+        public GrayscaleTexture2D NoiseTexture;
 
         public override void SetupStatic()
         {
+            NoiseTexture = new("CalamityMod/ExtraTextures/GreyscaleGradients/BlobbyNoise");
+
             Main.tileSolid[Type] = true;
             Main.tileBlockLight[Type] = true;
             Main.tileBrick[Type] = true; 
@@ -36,6 +39,12 @@ namespace CalamityMod.Tiles.Abyss
             this.RegisterUniversalMerge(TileID.Dirt, "CalamityMod/Tiles/Merges/DirtMerge");
             this.RegisterUniversalMerge(TileID.Stone, "CalamityMod/Tiles/Merges/StoneMerge");
             this.RegisterUniversalMerge(ModContent.TileType<PyreMantle>(), "CalamityMod/Tiles/Merges/PyreMantleMerge");
+        }
+
+        public override void OnUnload()
+        {
+            NoiseTexture?.Unload();
+            NoiseTexture = null;
         }
 
         int animationFrameWidth = 234;
@@ -80,14 +89,10 @@ namespace CalamityMod.Tiles.Abyss
 
         public override Color GetGlowMaskColor(int i, int j, TileDrawInfo drawData)
         {
-            float brightness = 1f;
-            float timeFactor = (float)(Main.timeForVisualEffects * 0.007);
-            brightness *= MathF.Sin(i / 18f + timeFactor);
-            brightness *= MathF.Sin(j / 18f + timeFactor);
-            brightness *= MathF.Sin(i * 18f + timeFactor);
-            brightness *= MathF.Sin(j * 18f + timeFactor);
-            brightness *= 0.75f;
-            return Color.White * brightness;
+            int time = (int)(Main.timeForVisualEffects * 0.3);
+            float brightness = 1.0f - NoiseTexture.GetRepeat((i * 100) + time, (j * 100) + time);
+            brightness -= 0.55f;
+            return new Color(brightness, brightness, brightness);
         }
     }
 }

@@ -23,6 +23,9 @@ namespace CalamityMod.Tiles
         public FramedMaskTexture GlowMask;
 
         internal static GlowMaskTile[] InstanceLookup; // This Lookup is Array for performances sake
+        internal static int LookupLength;
+
+        public PaintColorTint GlowMaskPaintInteraction = PaintColorTint.OnlyByDeepPaint;
 
         public abstract string GlowMaskAsset { get; }
 
@@ -37,6 +40,8 @@ namespace CalamityMod.Tiles
             GlowMask = new(GlowMaskAsset, 18, 18);
 
             InstanceLookup ??= new GlowMaskTile[TileLoader.TileCount];
+            LookupLength = InstanceLookup.Length;
+
             InstanceLookup[Type] = this;
 
             SetupStatic();
@@ -55,8 +60,6 @@ namespace CalamityMod.Tiles
         public virtual void SetupStatic() { }
 
         public virtual void OnUnload() { }
-
-        public virtual PaintColorTint ColorTint => PaintColorTint.OnlyByDeepPaint;
 
         public abstract Color GetGlowMaskColor(int i, int j, TileDrawInfo drawData);
 

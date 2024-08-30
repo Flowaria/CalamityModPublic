@@ -16,10 +16,11 @@ namespace CalamityMod.Tiles
     public class GiantPlanteraBulb : GlowMaskTile
     {
         public override string GlowMaskAsset => $"{Texture}Glow";
-        public override PaintColorTint ColorTint => PaintColorTint.None;
 
         public override void SetupStatic()
         {
+            GlowMaskPaintInteraction = PaintColorTint.None;
+
             // Tile can provide light
             Main.tileLighted[Type] = true;
 
