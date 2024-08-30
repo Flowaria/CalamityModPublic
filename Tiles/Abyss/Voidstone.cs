@@ -89,7 +89,7 @@ namespace CalamityMod.Tiles.Abyss
 
         public override Color GetGlowMaskColor(int i, int j, TileDrawInfo drawData)
         {
-            int time = (int)(Main.timeForVisualEffects * 0.15);
+            int time = (int)(Main.timeForVisualEffects * 0.11);
             float brightness = 1.0f - NoiseTexture.GetRepeat((i * 100) + time, (j * 100) + time);
             brightness -= 0.55f;
             return new Color(brightness, brightness, brightness);
